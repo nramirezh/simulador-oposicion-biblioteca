@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenador de Examen Práctico - Auxiliar de Biblioteca</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SortableJS para Drag & Drop dinámico en móvil y escritorio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <!-- Font Family Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Estilos Flip Card para Flashcards MARC21 */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Sombras e interacciones */
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+        }
+        .ghost-card {
+            opacity: 0.4;
+            background-color: #f1f5f9 !important;
+            border: 2px dashed #3b82f6 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- BARRA SUPERIOR FIJA (CRONÓMETRO Y ESTADÍSTICAS) -->
+    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-500/30">
+                    <i data-lucide="book-open-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-tight text-slate-100 leading-tight">Práctico Auxiliar Biblioteca</h1>
+                    <p class="text-xs text-slate-400">Ayuntamiento de Santa Cruz de Tenerife</p>
+                </div>
+            </div>
+
+            <!-- Cronómetro y Controles -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="bg-slate-800 px-3 sm:px-4 py-1.5 rounded-xl border border-slate-700/60 flex items-center space-x-2">
+                    <i data-lucide="clock" class="w-4 h-4 text-blue-400 animate-pulse"></i>
+                    <span id="timer-display" class="mono-font text-base sm:text-lg font-bold text-slate-100 tracking-wider">00:00</span>
+                </div>
+                <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700/60">
+                    <button id="btn-start-timer" onclick="toggleTimer()" title="Iniciar/Pausar" class="p-1.5 hover:bg-slate-700 text-slate-200 hover:text-white rounded-lg transition-colors">
+                        <i data-lucide="play" id="icon-play-pause" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="resetTimer()" title="Reiniciar Reloj" class="p-1.5 hover:bg-slate-700 text-slate-400 hover:text-white rounded-lg transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVEGACIÓN Y TABS DE MÓDULOS -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
+        
+        <!-- Pestañas Modulares -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 p-1.5 bg-slate-200/80 rounded-2xl">
+            <button id="tab-tejuelos" onclick="switchTab('tejuelos')" class="flex items-center justify-center space-x-2 py-3 px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                <i data-lucide="layers" class="w-4 h-4 hidden sm:inline"></i>
+                <span>1. Tejuelos (2.0 ptos)</span>
+            </button>
+            <button id="tab-cdu" onclick="switchTab('cdu')" class="flex items-center justify-center space-x-2 py-3 px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50">
+                <i data-lucide="binary" class="w-4 h-4 hidden sm:inline"></i>
+                <span>2. CDU (2.0 ptos)</span>
+            </button>
+            <button id="tab-marc" onclick="switchTab('marc')" class="flex items-center justify-center space-x-2 py-3 px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50">
+                <i data-lucide="tags" class="w-4 h-4 hidden sm:inline"></i>
+                <span>3. MARC21 (2.0 ptos)</span>
+            </button>
+        </div>
+
+        <!-- MÓDULO 1: ORDENACIÓN DE TEJUELOS -->
+        <section id="module-tejuelos" class="space-y-4">
+            <!-- Header Módulo -->
+            <div class="bg-white p-5 rounded-2xl card-shadow border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Ejercicio 1</span>
+                        <h2 class="text-lg font-bold text-slate-800">Ordenación Alfabética de Tejuelos (20 Items)</h2>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Ordena según la norma: <strong class="text-slate-700">Sección/Clasificación → 3 letras Autor (Mayúsculas) → 3 letras Título (minúsculas)</strong>. Desempata por la 3ª línea.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <button onclick="shuffleTejuelos()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-colors">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                        <span>Barajar</span>
+                    </button>
+                    <button onclick="checkTejuelos()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-md shadow-blue-500/20 transition-all">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        <span>Comprobar Tejuelos</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Feedback Tejuelos -->
+            <div id="feedback-tejuelos" class="hidden p-4 rounded-2xl border transition-all"></div>
+
+            <!-- Grid/Lista de Tejuelos Interactivos -->
+            <div id="tejuelos-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- MÓDULO 2: ORDENACIÓN DE LA CDU -->
+        <section id="module-cdu" class="hidden space-y-4">
+            <!-- Header Módulo -->
+            <div class="bg-white p-5 rounded-2xl card-shadow border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Ejercicio 2</span>
+                        <h2 class="text-lg font-bold text-slate-800">Ordenación Sistemática de la CDU (10 Signaturas)</h2>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Aplica la tabla jerárquica de la CDU: <strong class="text-slate-700">Adición (+), Extensión (/), Relación (:), Número principal, Auxiliares de Forma (0...), Lugar (...), Tiempo "..."</strong>.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <button onclick="shuffleCDU()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-colors">
+                        <i data-lucide="shuffle" class="w-4 h-4"></i>
+                        <span>Barajar</span>
+                    </button>
+                    <button onclick="checkCDU()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-md shadow-indigo-500/20 transition-all">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        <span>Comprobar CDU</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel Feedback CDU -->
+            <div id="feedback-cdu" class="hidden p-4 rounded-2xl border transition-all"></div>
+
+            <!-- Lista de CDU Interactivas -->
+            <div id="cdu-container" class="space-y-2 max-w-4xl mx-auto">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- MÓDULO 3: MEMORIZACIÓN MARC21 -->
+        <section id="module-marc" class="hidden space-y-4">
+            <!-- Header Módulo -->
+            <div class="bg-white p-5 rounded-2xl card-shadow border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-full">Ejercicio 3</span>
+                        <h2 class="text-lg font-bold text-slate-800">Flashcards MARC21 Bibliográfico</h2>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        Haz clic en las tarjetas para rotarlas. Ponte a prueba memorizando las etiquetas más preguntadas en Santa Cruz.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <button onclick="flipAllMARC(true)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium">Voltear Todas</button>
+                    <button onclick="flipAllMARC(false)" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-medium">Ocultar Todas</button>
+                </div>
+            </div>
+
+            <!-- Grid de Flashcards MARC21 -->
+            <div id="marc-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </section>
+
+        <!-- HISTORIAL Y RESUMEN DE PUNTUACIÓN -->
+        <section class="bg-white rounded-2xl p-5 card-shadow border border-slate-100 space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i data-lucide="history" class="w-5 h-5 text-slate-500"></i>
+                    <h3 class="text-sm font-bold text-slate-800">Historial de Tiempos y Intentos</h3>
+                </div>
+                <button onclick="clearHistory()" class="text-xs text-red-500 hover:text-red-700 font-medium">Borrar Historial</button>
+            </div>
+            <div id="history-list" class="flex flex-wrap gap-2 text-xs text-slate-600">
+                <span class="text-slate-400 italic">No hay intentos guardados aún.</span>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            Simulador de Oposición Auxiliar de Biblioteca • Diseñado para repositorios en GitHub Pages
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE LÓGICA INTERACTIVA -->
+    <script>
+        // --- DATOS OFICIALES DE EXAMEN ---
+        const tejuelosOriginales = [
+            { id: 1, sec: 'I-N', aut: 'CHA', tit: 'eno' },
+            { id: 2, sec: 'I-N', aut: 'GRE', tit: 'inv' },
+            { id: 3, sec: 'I-N', aut: 'OLL', tit: 'sab' },
+            { id: 4, sec: 'I-N', aut: 'PER', tit: 'cue' },
+            { id: 5, sec: 'I-N', aut: 'PER', tit: 'gue' },
+            { id: 6, sec: 'I-N', aut: 'PES', tit: 'nat' },
+            { id: 7, sec: 'I-N', aut: 'VAL', tit: 'lag' },
+            { id: 8, sec: 'I-N', aut: 'VAL', tit: 'rit' },
+            { id: 9, sec: 'N', aut: 'ZAM', tit: 'cue' },
+            { id: 10, sec: 'N', aut: 'ZAM', tit: 'gab' },
+            { id: 11, sec: 'N', aut: 'ZAM', tit: 'mir' },
+            { id: 12, sec: 'N', aut: 'ZAM', tit: 'rel' },
+            { id: 13, sec: 'N', aut: 'ZAN', tit: 'lov' },
+            { id: 14, sec: 'N', aut: 'ZAP', tit: 'del' },
+            { id: 15, sec: 'P', aut: 'ABD', tit: 'pla' },
+            { id: 16, sec: 'P', aut: 'ABE', tit: '' },
+            { id: 17, sec: 'P', aut: 'ACO', tit: 'ant' },
+            { id: 18, sec: 'P', aut: 'ACO', tit: 'del' },
+            { id: 19, sec: 'P', aut: 'ANT', tit: '' },
+            { id: 20, sec: 'P', aut: 'ANT', tit: 'ant' }
+        ];
+
+        const cduOriginales = [
+            { id: 'D', sig: '94(460)".../14"', desc: 'Aux. Tiempo cronológico antiguo' },
+            { id: 'F', sig: '94(460)"13/15"', desc: 'Aux. Tiempo periodo' },
+            { id: 'E', sig: '94(460)"14"', desc: 'Aux. Tiempo siglo XV' },
+            { id: 'B', sig: '94(460)"14/15"', desc: 'Aux. Tiempo periodo' },
+            { id: 'G', sig: '94(460)"14/16"', desc: 'Aux. Tiempo periodo' },
+            { id: 'I', sig: '94(460)"1497/1507"', desc: 'Aux. Tiempo años exactos' },
+            { id: 'A', sig: '94(460)"15/17"', desc: 'Aux. Tiempo periodo posterior' },
+            { id: 'H', sig: '94(460)"1517/1648"', desc: 'Aux. Tiempo periodo posterior' },
+            { id: 'J', sig: '94(460)"1797"(093)', desc: 'Aux. Tiempo + Aux. Forma (093)' },
+            { id: 'C', sig: '94(460).09', desc: 'Subdivisión especial .09' }
+        ];
+
+        const marccards = [
+            { tag: '017', name: 'Número de Depósito Legal', cat: 'Control' },
+            { tag: '020', name: 'ISBN (Standard Book Number)', cat: 'Control' },
+            { tag: '080', name: 'Número de la CDU', cat: 'Clasificación' },
+            { tag: '100', name: 'Autor Principal (Persona)', cat: 'Acceso' },
+            { tag: '245', name: 'Título y Mención de Responsabilidad', cat: 'Título' },
+            { tag: '250', name: 'Mención de Edición', cat: 'Edición' },
+            { tag: '260', name: 'Publicación, Distribución (Lugar, Ed., Año)', cat: 'Publicación' },
+            { tag: '300', name: 'Descripción Física (Págs, dimensiones)', cat: 'Descripción' },
+            { tag: '336/337', name: 'Tipo de Contenido y Medio (RDA)', cat: 'Descripción' },
+            { tag: '500', name: 'Nota General', cat: 'Notas' },
+            { tag: '521', name: 'Nota de Público Objetivo / Edad', cat: 'Notas' },
+            { tag: '655', name: 'Materia - Término de Género/Forma', cat: 'Materias' }
+        ];
+
+        // --- ESTADO GLOBAL ---
+        let currentTejuelos = [];
+        let currentCDU = [];
+        let sortableTejuelos, sortableCDU;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        // --- INICIALIZACIÓN ---
+        window.onload = function() {
+            lucide.createIcons();
+            shuffleTejuelos();
+            shuffleCDU();
+            renderMARC();
+            loadHistory();
+            startTimer();
+        };
+
+        // --- NAVEGACIÓN TAB ---
+        function switchTab(tab) {
+            ['tejuelos', 'cdu', 'marc'].forEach(t => {
+                document.getElementById(`module-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).className = 'flex items-center justify-center space-x-2 py-3 px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-600 hover:text-slate-900 hover:bg-white/50';
+            });
+
+            document.getElementById(`module-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).className = 'flex items-center justify-center space-x-2 py-3 px-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 bg-white text-blue-600 shadow-sm';
+        }
+
+        // --- RELOJ / CRONÓMETRO ---
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerInterval = setInterval(() => {
+                    timerSeconds++;
+                    updateTimerDisplay();
+                }, 1000);
+                document.getElementById('icon-play-pause').setAttribute('data-lucide', 'pause');
+                lucide.createIcons();
+            }
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('icon-play-pause').setAttribute('data-lucide', 'play');
+            } else {
+                startTimer();
+            }
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = 0;
+            updateTimerDisplay();
+            document.getElementById('icon-play-pause').setAttribute('data-lucide', 'play');
+            lucide.createIcons();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+            const s = (timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        // --- MÓDULO 1: TEJUELOS ---
+        function shuffleTejuelos() {
+            currentTejuelos = [...tejuelosOriginales].sort(() => Math.random() - 0.5);
+            renderTejuelos();
+            document.getElementById('feedback-tejuelos').classList.add('hidden');
+        }
+
+        function renderTejuelos() {
+            const container = document.getElementById('tejuelos-container');
+            container.innerHTML = '';
+
+            currentTejuelos.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'bg-white p-3 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between select-none cursor-grab active:cursor-grabbing hover:border-blue-400 transition-all';
+                el.dataset.id = item.id;
+
+                el.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-2">
+                        <span class="text-[10px] font-bold text-slate-400">#${index + 1}</span>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="moveItem('tejuelos', ${index}, -1)" class="p-1 hover:bg-slate-100 rounded text-slate-500"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
+                            <button onclick="moveItem('tejuelos', ${index}, 1)" class="p-1 hover:bg-slate-100 rounded text-slate-500"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    </div>
+                    <!-- Tejuelo visual -->
+                    <div class="bg-amber-50/60 border border-amber-200/80 rounded-lg p-2.5 text-center mono-font space-y-0.5">
+                        <div class="text-xs font-bold text-amber-900 tracking-wide">${item.sec}</div>
+                        <div class="text-sm font-extrabold text-slate-800 tracking-wider">${item.aut}</div>
+                        <div class="text-xs font-semibold text-slate-600 tracking-widest min-h-[16px]">${item.tit || '&nbsp;'}</div>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+
+            lucide.createIcons();
+
+            if (sortableTejuelos) sortableTejuelos.destroy();
+            sortableTejuelos = new Sortable(container, {
+                animation: 150,
+                ghostClass: 'ghost-card',
+                onEnd: function() {
+                    const newOrder = Array.from(container.children).map(child => parseInt(child.dataset.id));
+                    currentTejuelos = newOrder.map(id => tejuelosOriginales.find(t => t.id === id));
+                    renderTejuelos();
+                }
+            });
+        }
+
+        function moveItem(type, index, direction) {
+            const list = type === 'tejuelos' ? currentTejuelos : currentCDU;
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= list.length) return;
+
+            const temp = list[index];
+            list[index] = list[newIndex];
+            list[newIndex] = temp;
+
+            if (type === 'tejuelos') renderTejuelos();
+            else renderCDU();
+        }
+
+        function checkTejuelos() {
+            let correct = 0;
+            currentTejuelos.forEach((item, index) => {
+                if (item.id === tejuelosOriginales[index].id) correct++;
+            });
+
+            const score = (correct * 0.10).toFixed(2);
+            const feedback = document.getElementById('feedback-tejuelos');
+            feedback.classList.remove('hidden');
+
+            if (correct === 20) {
+                feedback.className = 'p-4 rounded-2xl border bg-emerald-50 border-emerald-200 text-emerald-900';
+                feedback.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-base">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                        <span>¡Perfecto! 20/20 Aciertos (+${score} / 2.0 ptos)</span>
+                    </div>
+                    <p class="text-xs mt-1 text-emerald-700">Has desempatado correctamente todas las secciones, autores y títulos.</p>
+                `;
+            } else {
+                feedback.className = 'p-4 rounded-2xl border bg-amber-50 border-amber-200 text-amber-900';
+                feedback.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-base">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+                        <span>Puntuación: ${score} / 2.0 ptos (${correct} de 20 en posición correcta)</span>
+                    </div>
+                    <p class="text-xs mt-1 text-amber-800">Recuerda la jerarquía: Sección (I-N < N < P) → Apellido Autor (MAY) → Título (min). Si el autor no tiene título, va antes que los que tienen título.</p>
+                `;
+            }
+            lucide.createIcons();
+            saveHistory('Tejuelos', `${score}/2.0 ptos (${correct}/20)`);
+        }
+
+        // --- MÓDULO 2: CDU ---
+        function shuffleCDU() {
+            currentCDU = [...cduOriginales].sort(() => Math.random() - 0.5);
+            renderCDU();
+            document.getElementById('feedback-cdu').classList.add('hidden');
+        }
+
+        function renderCDU() {
+            const container = document.getElementById('cdu-container');
+            container.innerHTML = '';
+
+            currentCDU.forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = 'bg-white p-3.5 rounded-xl border border-slate-200 card-shadow flex items-center justify-between select-none cursor-grab active:cursor-grabbing hover:border-indigo-400 transition-all';
+                el.dataset.id = item.id;
+
+                el.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-bold text-slate-400 w-5">#${index + 1}</span>
+                        <div class="mono-font font-bold text-slate-800 text-sm bg-slate-100 px-3 py-1 rounded-lg border border-slate-200">${item.sig}</div>
+                        <span class="text-xs text-slate-500 hidden sm:inline">${item.desc}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="moveItem('cdu', ${index}, -1)" class="p-1 hover:bg-slate-100 rounded text-slate-500"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+                        <button onclick="moveItem('cdu', ${index}, 1)" class="p-1 hover:bg-slate-100 rounded text-slate-500"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+
+            lucide.createIcons();
+
+            if (sortableCDU) sortableCDU.destroy();
+            sortableCDU = new Sortable(container, {
+                animation: 150,
+                ghostClass: 'ghost-card',
+                onEnd: function() {
+                    const newOrder = Array.from(container.children).map(child => child.dataset.id);
+                    currentCDU = newOrder.map(id => cduOriginales.find(c => c.id === id));
+                    renderCDU();
+                }
+            });
+        }
+
+        function checkCDU() {
+            let correct = 0;
+            currentCDU.forEach((item, index) => {
+                if (item.id === cduOriginales[index].id) correct++;
+            });
+
+            const score = (correct * 0.20).toFixed(2);
+            const feedback = document.getElementById('feedback-cdu');
+            feedback.classList.remove('hidden');
+
+            if (correct === 10) {
+                feedback.className = 'p-4 rounded-2xl border bg-emerald-50 border-emerald-200 text-emerald-900';
+                feedback.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-base">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
+                        <span>¡Excelente! 10/10 CDU Correctas (+${score} / 2.0 ptos)</span>
+                    </div>
+                    <p class="text-xs mt-1 text-emerald-700">Has aplicado perfectamente la jerarquía de auxiliares cronológicos y forma.</p>
+                `;
+            } else {
+                feedback.className = 'p-4 rounded-2xl border bg-amber-50 border-amber-200 text-amber-900';
+                feedback.innerHTML = `
+                    <div class="flex items-center space-x-2 font-bold text-base">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-amber-600"></i>
+                        <span>Puntuación: ${score} / 2.0 ptos (${correct} de 10 ordenadas correctamente)</span>
+                    </div>
+                    <p class="text-xs mt-1 text-amber-800">Orden correcto de periodos comillas "...": Cronología antigua (".../14") → Periodos por siglo inicial → Años exactos ("1497/1507") → Auxiliar de Forma (0...) → Subdivisión especial (.09).</p>
+                `;
+            }
+            lucide.createIcons();
+            saveHistory('CDU', `${score}/2.0 ptos (${correct}/10)`);
+        }
+
+        // --- MÓDULO 3: FLASHCARDS MARC21 ---
+        function renderMARC() {
+            const container = document.getElementById('marc-container');
+            container.innerHTML = '';
+
+            marccards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'perspective-1000 h-36 cursor-pointer';
+                cardEl.onclick = () => {
+                    const inner = cardEl.querySelector('.card-inner');
+                    inner.classList.toggle('rotate-y-180');
+                };
+
+                cardEl.innerHTML = `
+                    <div class="card-inner relative w-full h-full transform-style-3d transition-transform duration-500 rounded-2xl border border-slate-200 card-shadow">
+                        <!-- Frente (Campo) -->
+                        <div class="absolute inset-0 bg-white rounded-2xl p-4 backface-hidden flex flex-col justify-between border-b-4 border-blue-500">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${card.cat}</span>
+                            <div class="text-center">
+                                <span class="mono-font text-3xl font-extrabold text-blue-600 tracking-wider">MARC ${card.tag}</span>
+                            </div>
+                            <span class="text-[11px] text-center text-slate-400 font-medium">Clic para voltear</span>
+                        </div>
+                        <!-- Reverso (Significado) -->
+                        <div class="absolute inset-0 bg-slate-900 text-white rounded-2xl p-4 rotate-y-180 backface-hidden flex flex-col justify-center items-center text-center space-y-1">
+                            <span class="text-xs font-bold text-blue-400">Campo ${card.tag}</span>
+                            <p class="text-xs font-medium text-slate-100 leading-snug">${card.name}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cardEl);
+            });
+        }
+
+        function flipAllMARC(flip) {
+            document.querySelectorAll('.card-inner').forEach(inner => {
+                if (flip) inner.classList.add('rotate-y-180');
+                else inner.classList.remove('rotate-y-180');
+            });
+        }
+
+        // --- HISTORIAL DE LOCALSTORAGE ---
+        function saveHistory(moduleName, result) {
+            const timeStr = document.getElementById('timer-display').innerText;
+            const history = JSON.parse(localStorage.getItem('library_prep_history') || '[]');
+            history.unshift({ module: moduleName, result: result, time: timeStr, date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+            localStorage.setItem('library_prep_history', JSON.stringify(history.slice(0, 10)));
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('library_prep_history') || '[]');
+            const container = document.getElementById('history-list');
+            if (history.length === 0) {
+                container.innerHTML = `<span class="text-slate-400 italic">No hay intentos guardados aún.</span>`;
+                return;
+            }
+            container.innerHTML = history.map(item => `
+                <div class="bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl flex items-center space-x-2">
+                    <span class="font-bold text-slate-700">${item.module}:</span>
+                    <span class="text-blue-600 font-semibold">${item.result}</span>
+                    <span class="text-slate-400">(${item.time})</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('library_prep_history');
+            loadHistory();
+        }
+    </script>
+</body>
+</html>
