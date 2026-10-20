@@ -82,20 +82,27 @@
         <div class="flex justify-between items-center mb-4">
           <div>
             <h2 class="text-xl font-bold text-slate-900">Ejercicio 1: Ordenación de Tejuelos (20 elementos)</h2>
-            <p class="text-sm text-slate-600">Arrastra las tarjetas o usa los botones para ordenar alfabéticamente por: 1º Sección, 2º Autor (MAYÚSCULAS) y 3º Título (minúsculas).</p>
+            <p class="text-sm text-slate-600">Ordena alfabéticamente por: 1º Sección, 2º Autor (MAYÚSCULAS) y 3º Título (minúsculas).</p>
           </div>
           <button onclick="comprobarTejuelos()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2">
             <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>Comprobar Tejuelos</span>
+            <span>Comprobar Respuestas</span>
           </button>
         </div>
 
         <div id="feedback-tejuelos" class="hidden mb-4 p-4 rounded-lg"></div>
 
-        <!-- Lista de Tejuelos Interactiva -->
-        <div id="lista-tejuelos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <!-- Generado dinámicamente -->
+        <!-- Solución desplegable -->
+        <div id="solucion-tejuelos" class="hidden mb-6 p-4 bg-slate-900 text-slate-100 rounded-lg">
+          <h3 class="font-bold text-amber-400 mb-2 flex items-center space-x-2">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Orden Correcto Oficial:</span>
+          </h3>
+          <ol id="lista-solucion-tejuelos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs font-mono"></ol>
         </div>
+
+        <!-- Lista de Tejuelos Interactiva -->
+        <div id="lista-tejuelos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
       </div>
     </section>
 
@@ -105,19 +112,26 @@
         <div class="flex justify-between items-center mb-4">
           <div>
             <h2 class="text-xl font-bold text-slate-900">Ejercicio 2: Ordenación de Signaturas CDU (10 elementos)</h2>
-            <p class="text-sm text-slate-600">Ordena de menor a mayor respetando la jerarquía estricta de auxiliares y números principales de la CDU.</p>
+            <p class="text-sm text-slate-600">Ordena de menor a mayor respetando la jerarquía estricta de auxiliares de la CDU.</p>
           </div>
           <button onclick="comprobarCDU()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2">
             <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>Comprobar CDU</span>
+            <span>Comprobar Respuestas</span>
           </button>
         </div>
 
         <div id="feedback-cdu" class="hidden mb-4 p-4 rounded-lg"></div>
 
-        <div id="lista-cdu" class="space-y-2 max-w-3xl mx-auto">
-          <!-- Generado dinámicamente -->
+        <!-- Solución desplegable CDU -->
+        <div id="solucion-cdu" class="hidden mb-6 p-4 bg-slate-900 text-slate-100 rounded-lg">
+          <h3 class="font-bold text-amber-400 mb-2 flex items-center space-x-2">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Orden Correcto Oficial:</span>
+          </h3>
+          <ol id="lista-solucion-cdu" class="space-y-1 text-xs font-mono"></ol>
         </div>
+
+        <div id="lista-cdu" class="space-y-2 max-w-3xl mx-auto"></div>
       </div>
     </section>
 
@@ -126,12 +140,9 @@
       <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
         <div class="mb-4">
           <h2 class="text-xl font-bold text-slate-900">Ejercicio 3: Tarjetas de Memoria MARC21</h2>
-          <p class="text-sm text-slate-600">Haz clic en cada tarjeta para girarla y memorizar la etiqueta o subcampo del formato MARC21.</p>
+          <p class="text-sm text-slate-600">Haz clic en cada tarjeta para girarla y memorizar la etiqueta del formato MARC21.</p>
         </div>
-
-        <div id="grid-marc" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <!-- Generado dinámicamente -->
-        </div>
+        <div id="grid-marc" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
       </div>
     </section>
 
@@ -139,17 +150,14 @@
     <section id="sec-historial" class="tab-content hidden">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
         <h2 class="text-xl font-bold text-slate-900 mb-4">Registro de Intentos</h2>
-        <div id="tabla-historial" class="overflow-x-auto">
-          <!-- Tabla con resultados de localStorage -->
-        </div>
+        <div id="tabla-historial" class="overflow-x-auto"></div>
       </div>
     </section>
   </main>
 
   <script>
-    // --- BANCOS DE DATOS EXTENDIDOS ---
+    // BANCOS DE DATOS EXTENDIDOS
     const BANCO_TEJUELOS = [
-      // Sección Infantil / Juvenil (I-N)
       { seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
       { seccion: "I-N", autor: "GRE", titulo: "inv", texto: "I-N / GRE / inv" },
       { seccion: "I-N", autor: "OLL", titulo: "sab", texto: "I-N / OLL / sab" },
@@ -162,7 +170,6 @@
       { seccion: "I-N", autor: "OLA", titulo: "mar", texto: "I-N / OLA / mar" },
       { seccion: "I-N", autor: "OSO", titulo: "bos", texto: "I-N / OSO / bos" },
       { seccion: "I-N", autor: "THO", titulo: "isla", texto: "I-N / THO / isla" },
-      // Sección Narrativa Adultos (N)
       { seccion: "N", autor: "ZAM", titulo: "cue", texto: "N / ZAM / cue" },
       { seccion: "N", autor: "ZAM", titulo: "gab", texto: "N / ZAM / gab" },
       { seccion: "N", autor: "ZAM", titulo: "mir", texto: "N / ZAM / mir" },
@@ -171,7 +178,6 @@
       { seccion: "N", autor: "ZAP", titulo: "del", texto: "N / ZAP / del" },
       { seccion: "N", autor: "GARC", titulo: "cien", texto: "N / GARC / cien" },
       { seccion: "N", autor: "GARC", titulo: "cro", texto: "N / GARC / cro" },
-      // Sección Préstamo / Colección General (P)
       { seccion: "P", autor: "ABD", titulo: "pla", texto: "P / ABD / pla" },
       { seccion: "P", autor: "ABE", titulo: "", texto: "P / ABE" },
       { seccion: "P", autor: "ACO", titulo: "ant", texto: "P / ACO / ant" },
@@ -181,7 +187,6 @@
     ];
 
     const BANCO_CDU = [
-      // Auxiliares de tiempo e historias (Santa Cruz)
       { cdu: "94(460)\".../14\"", valor: 1 },
       { cdu: "94(460)\"13/15\"", valor: 2 },
       { cdu: "94(460)\"14\"", valor: 3 },
@@ -192,7 +197,6 @@
       { cdu: "94(460)\"1517/1648\"", valor: 8 },
       { cdu: "94(460)\"1797\"(093)", valor: 9 },
       { cdu: "94(460).09", valor: 10 },
-      // Medicina / Ciencias
       { cdu: "61:001.891(460)\"19\"", valor: 11 },
       { cdu: "61:001.891\"1991\"", valor: 12 },
       { cdu: "61:001.895", valor: 13 },
@@ -217,14 +221,12 @@
       { campo: "655", desc: "Materia - Término de género/forma" }
     ];
 
-    // Variables de estado
     let tejuelosActuales = [];
     let cduActual = [];
     let timerInterval = null;
     let timerSeconds = 0;
     let timerRunning = false;
 
-    // --- LÓGICA DE CONTROL ---
     window.onload = function() {
       lucide.createIcons();
       generarNuevoExamen();
@@ -235,31 +237,29 @@
     function generarNuevoExamen() {
       resetTimer();
       
-      // 1. Seleccionar 20 tejuelos aleatorios y mezclarlos
       const tejuelosMezclados = [...BANCO_TEJUELOS].sort(() => Math.random() - 0.5);
       tejuelosActuales = tejuelosMezclados.slice(0, 20);
       renderTejuelos(tejuelosActuales);
 
-      // 2. Seleccionar 10 CDU aleatorias
       const cduMezclada = [...BANCO_CDU].sort(() => Math.random() - 0.5);
       cduActual = cduMezclada.slice(0, 10);
       renderCDU(cduActual);
 
-      // 3. Renderizar Flashcards MARC21
       renderMARC();
 
-      // Limpiar feedbacks
       document.getElementById("feedback-tejuelos").classList.add("hidden");
+      document.getElementById("solucion-tejuelos").classList.add("hidden");
       document.getElementById("feedback-cdu").classList.add("hidden");
+      document.getElementById("solucion-cdu").classList.add("hidden");
     }
 
-    // --- RENDERIZADO DE ELEMENTOS ---
     function renderTejuelos(items) {
       const container = document.getElementById("lista-tejuelos");
       container.innerHTML = "";
       items.forEach((item, index) => {
         const card = document.createElement("div");
-        card.className = "bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:shadow transition";
+        card.id = `card-tejuelo-${index}`;
+        card.className = "item-tejuelo bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:shadow transition";
         card.dataset.id = JSON.stringify(item);
         card.innerHTML = `
           <div class="flex items-center space-x-3">
@@ -281,7 +281,8 @@
       container.innerHTML = "";
       items.forEach((item, index) => {
         const card = document.createElement("div");
-        card.className = "bg-slate-50 border border-slate-300 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:bg-slate-100 transition";
+        card.id = `card-cdu-${index}`;
+        card.className = "item-cdu bg-slate-50 border border-slate-300 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:bg-slate-100 transition";
         card.dataset.id = JSON.stringify(item);
         card.innerHTML = `
           <div class="flex items-center space-x-3">
@@ -320,7 +321,6 @@
       });
     }
 
-    // --- ORDENACIÓN DRAG & DROP Y BOTONES ---
     function inicializarSortable() {
       new Sortable(document.getElementById("lista-tejuelos"), { animation: 150 });
       new Sortable(document.getElementById("lista-cdu"), { animation: 150 });
@@ -339,12 +339,12 @@
       }
     }
 
-    // --- COMPROBACIÓN Y EVALUACIÓN ---
+    // COMPROBACIÓN Y MARCADO VISUAL EN ROJO/VERDE
     function comprobarTejuelos() {
       const container = document.getElementById("lista-tejuelos");
-      const seleccionados = Array.from(container.children).map(child => JSON.parse(child.dataset.id));
+      const tarjetas = Array.from(container.children);
+      const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
       
-      // Algoritmo oficial de ordenación de tejuelos
       const correcto = [...seleccionados].sort((a, b) => {
         if (a.seccion !== b.seccion) return a.seccion.localeCompare(b.seccion);
         if (a.autor !== b.autor) return a.autor.localeCompare(b.autor);
@@ -352,40 +352,75 @@
       });
 
       let aciertos = 0;
-      seleccionados.forEach((item, index) => {
-        if (item.texto === correcto[index].texto) aciertos++;
+      tarjetas.forEach((card, index) => {
+        const item = JSON.parse(card.dataset.id);
+        if (item.texto === correcto[index].texto) {
+          aciertos++;
+          card.className = "bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        } else {
+          card.className = "bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        }
       });
 
       const nota = (aciertos * 0.10).toFixed(2);
       const feedback = document.getElementById("feedback-tejuelos");
-      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-900'}`;
-      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos. <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
+      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-red-100 border-red-300 text-red-900'}`;
+      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos (Marcados en verde los correctos y en rojo los incorrectos). <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
       feedback.classList.remove("hidden");
+
+      // Desplegar Solución Correcta
+      const divSolucion = document.getElementById("solucion-tejuelos");
+      const listaSolucion = document.getElementById("lista-solucion-tejuelos");
+      listaSolucion.innerHTML = "";
+      correcto.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.innerText = `${idx + 1}. ${item.texto}`;
+        listaSolucion.appendChild(li);
+      });
+      divSolucion.classList.remove("hidden");
 
       guardarIntento("Tejuelos", `${aciertos}/${seleccionados.length}`, nota);
     }
 
     function comprobarCDU() {
       const container = document.getElementById("lista-cdu");
-      const seleccionados = Array.from(container.children).map(child => JSON.parse(child.dataset.id));
+      const tarjetas = Array.from(container.children);
+      const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
       
       const correcto = [...seleccionados].sort((a, b) => a.valor - b.valor);
 
       let aciertos = 0;
-      seleccionados.forEach((item, index) => {
-        if (item.cdu === correcto[index].cdu) aciertos++;
+      tarjetas.forEach((card, index) => {
+        const item = JSON.parse(card.dataset.id);
+        if (item.cdu === correcto[index].cdu) {
+          aciertos++;
+          card.className = "bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        } else {
+          card.className = "bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        }
       });
 
       const nota = (aciertos * 0.20).toFixed(2);
       const feedback = document.getElementById("feedback-cdu");
-      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-amber-100 border-amber-300 text-amber-900'}`;
-      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos. <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
+      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-red-100 border-red-300 text-red-900'}`;
+      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos (Marcados en verde los correctos y en rojo los incorrectos). <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
       feedback.classList.remove("hidden");
+
+      // Desplegar Solución Correcta CDU
+      const divSolucion = document.getElementById("solucion-cdu");
+      const listaSolucion = document.getElementById("lista-solucion-cdu");
+      listaSolucion.innerHTML = "";
+      correcto.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.innerText = `${idx + 1}. ${item.cdu}`;
+        listaSolucion.appendChild(li);
+      });
+      divSolucion.classList.remove("hidden");
 
       guardarIntento("CDU", `${aciertos}/${seleccionados.length}`, nota);
     }
 
-    // --- RELOJ / CRONÓMETRO ---
+    // RELOJ Y HISTORIAL
     function toggleTimer() {
       if (timerRunning) {
         clearInterval(timerInterval);
@@ -416,7 +451,6 @@
       document.getElementById("cronometro").innerText = `${mins}:${secs}`;
     }
 
-    // --- CONTROL DE PESTAÑAS Y LOCALSTORAGE ---
     function cambiarTab(tab) {
       document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
       document.querySelectorAll(".tab-btn").forEach(el => {
