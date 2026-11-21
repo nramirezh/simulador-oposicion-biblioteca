@@ -158,8 +158,6 @@
   <script>
     // BANCOS DE DATOS EXTENDIDOS
     const BANCO_TEJUELOS = [
-      // TEJUELOS
-
       // INFANTIL - NARRATIVA
       { seccion: "I-N", autor: "DAH", titulo: "mat", texto: "I-N / DAH / mat" },
       { seccion: "I-N", autor: "DAH", titulo: "cha", texto: "I-N / DAH / cha" },
@@ -167,23 +165,32 @@
       { seccion: "I-N", autor: "SAI", titulo: "pri", texto: "I-N / SAI / pri" },
       { seccion: "I-N", autor: "LIN", titulo: "his", texto: "I-N / LIN / his" },
       { seccion: "I-N", autor: "CAR", titulo: "ali", texto: "I-N / CAR / ali" },
-    
+      { seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
+      { seccion: "I-N", autor: "GRE", titulo: "inv", texto: "I-N / GRE / inv" },
+      { seccion: "I-N", autor: "OLL", titulo: "sab", texto: "I-N / OLL / sab" },
+      { seccion: "I-N", autor: "PER", titulo: "cue", texto: "I-N / PER / cue" },
+      { seccion: "I-N", autor: "PER", titulo: "gue", texto: "I-N / PER / gue" },
+      { seccion: "I-N", autor: "PES", titulo: "nat", texto: "I-N / PES / nat" },
+      { seccion: "I-N", autor: "VAL", titulo: "lag", texto: "I-N / VAL / lag" },
+      { seccion: "I-N", autor: "VAL", titulo: "rit", texto: "I-N / VAL / rit" },
+      { seccion: "I-N", autor: "VAL", titulo: "", texto: "I-N / VAL" },
+
       // INFANTIL - CONOCIMIENTO
       { seccion: "I-C", autor: "WIL", titulo: "enc", texto: "I-C / WIL / enc" },
       { seccion: "I-C", autor: "BUR", titulo: "ani", texto: "I-C / BUR / ani" },
       { seccion: "I-C", autor: "GOM", titulo: "pla", texto: "I-C / GOM / pla" },
       { seccion: "I-C", autor: "GAR", titulo: "cue", texto: "I-C / GAR / cue" },
-    
+
       // INFANTIL - POESÍA
       { seccion: "I-P", autor: "NER", titulo: "lib", texto: "I-P / NER / lib" },
       { seccion: "I-P", autor: "GLA", titulo: "ver", texto: "I-P / GLA / ver" },
       { seccion: "I-P", autor: "LOB", titulo: "ver", texto: "I-P / LOB / ver" },
-    
+
       // INFANTIL - CÓMIC
       { seccion: "I-CM", autor: "GOS", titulo: "tom", texto: "I-CM / GOS / tom" },
       { seccion: "I-CM", autor: "PIL", titulo: "dia", texto: "I-CM / PIL / dia" },
       { seccion: "I-CM", autor: "KIN", titulo: "don", texto: "I-CM / KIN / don" },
-    
+
       // NARRATIVA
       { seccion: "N", autor: "CER", titulo: "qui", texto: "N / CER / qui" },
       { seccion: "N", autor: "GAR", titulo: "cie", texto: "N / GAR / cie" },
@@ -195,149 +202,175 @@
       { seccion: "N", autor: "HUX", titulo: "mun", texto: "N / HUX / mun" },
       { seccion: "N", autor: "AUS", titulo: "org", texto: "N / AUS / org" },
       { seccion: "N", autor: "DOS", titulo: "cri", texto: "N / DOS / cri" },
-    
-      // POESÍA
-      { seccion: "P", autor: "LOR", titulo: "rom", texto: "P / LOR / rom" },
-      { seccion: "P", autor: "NER", titulo: "vei", texto: "P / NER / vei" },
-      { seccion: "P", autor: "BEN", titulo: "son", texto: "P / BEN / son" },
-      { seccion: "P", autor: "ALE", titulo: "som", texto: "P / ALE / som" },
-    
-      // TEATRO
-      { seccion: "T", autor: "LOR", titulo: "bod", texto: "T / LOR / bod" },
-      { seccion: "T", autor: "CAL", titulo: "vid", texto: "T / CAL / vid" },
-      { seccion: "T", autor: "SHA", titulo: "ham", texto: "T / SHA / ham" },
-      { seccion: "T", autor: "BUÑ", titulo: "his", texto: "T / BUÑ / his" },
-    
-      // BIOGRAFÍAS
-      { seccion: "B", autor: "GIB", titulo: "ste", texto: "B / GIB / ste" },
-      { seccion: "B", autor: "ISA", titulo: "fri", texto: "B / ISA / fri" },
-      { seccion: "B", autor: "MAN", titulo: "leo", texto: "B / MAN / leo" },
-      { seccion: "B", autor: "WAL", titulo: "ein", texto: "B / WAL / ein" },
-    
-      // CÓMIC
-      { seccion: "CM", autor: "HER", titulo: "mor", texto: "CM / HER / mor" },
-      { seccion: "CM", autor: "GRO", titulo: "con", texto: "CM / GRO / con" },
-      { seccion: "CM", autor: "MIL", titulo: "per", texto: "CM / MIL / per" },
-      { seccion: "CM", autor: "MOE", titulo: "wat", texto: "CM / MOE / wat" },
-    
-      // HISTORIA
-      { seccion: "H", autor: "HAR", titulo: "bre", texto: "H / HAR / bre" },
-      { seccion: "H", autor: "TUC", titulo: "arm", texto: "H / TUC / arm" },
-      { seccion: "H", autor: "BEV", titulo: "his", texto: "H / BEV / his" },
-    
-      // GEOGRAFÍA Y VIAJES
-      { seccion: "G", autor: "KAP", titulo: "via", texto: "G / KAP / via" },
-      { seccion: "G", autor: "HUM", titulo: "not", texto: "G / HUM / not" },
-      { seccion: "G", autor: "DAR", titulo: "via", texto: "G / DAR / via" },
-    
-      // FILOSOFÍA
-      { seccion: "F", autor: "PLA", titulo: "rep", texto: "F / PLA / rep" },
-      { seccion: "F", autor: "NIET", titulo: "asi", texto: "F / NIE / asi" },
-      { seccion: "F", autor: "ORT", titulo: "reb", texto: "F / ORT / reb" },
-    
-      // ENSAYO
-      { seccion: "E", autor: "SAG", titulo: "hom", texto: "E / SAG / hom" },
-      { seccion: "E", autor: "HAR", titulo: "mun", texto: "E / HAR / mun" },
-      { seccion: "E", autor: "CHA", titulo: "ori", texto: "E / CHA / ori" },
-    
-      // CIENCIAS
-      { seccion: "C", autor: "HAW", titulo: "bre", texto: "C / HAW / bre" },
-      { seccion: "C", autor: "SAG", titulo: "cos", texto: "C / SAG / cos" },
-      { seccion: "C", autor: "DAR", titulo: "ori", texto: "C / DAR / ori" },
-    
-      // ARTE
-      { seccion: "A", autor: "GOM", titulo: "his", texto: "A / GOM / his" },
-      { seccion: "A", autor: "GOM", titulo: "art", texto: "A / GOM / art" },
-      { seccion: "A", autor: "BER", titulo: "fot", texto: "A / BER / fot" },
-    
-      // CANARIAS
-      { seccion: "CAN", autor: "VIE", titulo: "his", texto: "CAN / VIE / his" },
-      { seccion: "CAN", autor: "MOR", titulo: "his", texto: "CAN / MOR / his" },
-      { seccion: "CAN", autor: "CRO", titulo: "his", texto: "CAN / CRO / his" },
-    
-      // REFERENCIA Y CONSULTA
-      { seccion: "R", autor: "RAE", titulo: "dic", texto: "R / RAE / dic" },
-      { seccion: "R", autor: "ESP", titulo: "enc", texto: "R / ESP / enc" }
-      
-      /*{ seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
-      { seccion: "I-N", autor: "GRE", titulo: "inv", texto: "I-N / GRE / inv" },
-      { seccion: "I-N", autor: "OLL", titulo: "sab", texto: "I-N / OLL / sab" },
-      { seccion: "I-N", autor: "PER", titulo: "cue", texto: "I-N / PER / cue" },
-      { seccion: "I-N", autor: "PER", titulo: "gue", texto: "I-N / PER / gue" },
-      { seccion: "I-N", autor: "PES", titulo: "nat", texto: "I-N / PES / nat" },
-      { seccion: "I-N", autor: "VAL", titulo: "lag", texto: "I-N / VAL / lag" },
-      { seccion: "I-N", autor: "VAL", titulo: "rit", texto: "I-N / VAL / rit" },
-      { seccion: "I-N", autor: "OCA", titulo: "sol", texto: "I-N / OCA / sol" },
-      { seccion: "I-N", autor: "OLA", titulo: "mar", texto: "I-N / OLA / mar" },
-      { seccion: "I-N", autor: "OSO", titulo: "bos", texto: "I-N / OSO / bos" },
-      { seccion: "I-N", autor: "THO", titulo: "isla", texto: "I-N / THO / isla" },
       { seccion: "N", autor: "ZAM", titulo: "cue", texto: "N / ZAM / cue" },
       { seccion: "N", autor: "ZAM", titulo: "gab", texto: "N / ZAM / gab" },
       { seccion: "N", autor: "ZAM", titulo: "mir", texto: "N / ZAM / mir" },
       { seccion: "N", autor: "ZAM", titulo: "rel", texto: "N / ZAM / rel" },
       { seccion: "N", autor: "ZAN", titulo: "lov", texto: "N / ZAN / lov" },
       { seccion: "N", autor: "ZAP", titulo: "del", texto: "N / ZAP / del" },
-      { seccion: "N", autor: "GARC", titulo: "cien", texto: "N / GARC / cien" },
-      { seccion: "N", autor: "GARC", titulo: "cro", texto: "N / GARC / cro" },
+
+      // POESÍA
+      { seccion: "P", autor: "LOR", titulo: "rom", texto: "P / LOR / rom" },
+      { seccion: "P", autor: "NER", titulo: "vei", texto: "P / NER / vei" },
+      { seccion: "P", autor: "BEN", titulo: "son", texto: "P / BEN / son" },
+      { seccion: "P", autor: "ALE", titulo: "som", texto: "P / ALE / som" },
       { seccion: "P", autor: "ABD", titulo: "pla", texto: "P / ABD / pla" },
       { seccion: "P", autor: "ABE", titulo: "", texto: "P / ABE" },
       { seccion: "P", autor: "ACO", titulo: "ant", texto: "P / ACO / ant" },
       { seccion: "P", autor: "ACO", titulo: "del", texto: "P / ACO / del" },
       { seccion: "P", autor: "ANT", titulo: "", texto: "P / ANT" },
-      { seccion: "P", autor: "ANT", titulo: "ant", texto: "P / ANT / ant" }*/
+      { seccion: "P", autor: "ANT", titulo: "ant", texto: "P / ANT / ant" },
+
+      // TEATRO
+      { seccion: "T", autor: "LOR", titulo: "bod", texto: "T / LOR / bod" },
+      { seccion: "T", autor: "CAL", titulo: "vid", texto: "T / CAL / vid" },
+      { seccion: "T", autor: "SHA", titulo: "ham", texto: "T / SHA / ham" },
+      { seccion: "T", autor: "BUÑ", titulo: "his", texto: "T / BUÑ / his" },
+
+      // BIOGRAFÍAS
+      { seccion: "B", autor: "GIB", titulo: "ste", texto: "B / GIB / ste" },
+      { seccion: "B", autor: "ISA", titulo: "fri", texto: "B / ISA / fri" },
+      { seccion: "B", autor: "MAN", titulo: "leo", texto: "B / MAN / leo" },
+      { seccion: "B", autor: "WAL", titulo: "ein", texto: "B / WAL / ein" },
+
+      // CÓMIC
+      { seccion: "CM", autor: "HER", titulo: "mor", texto: "CM / HER / mor" },
+      { seccion: "CM", autor: "GRO", titulo: "con", texto: "CM / GRO / con" },
+      { seccion: "CM", autor: "MIL", titulo: "per", texto: "CM / MIL / per" },
+      { seccion: "CM", autor: "MOE", titulo: "wat", texto: "CM / MOE / wat" },
+
+      // HISTORIA
+      { seccion: "H", autor: "HAR", titulo: "bre", texto: "H / HAR / bre" },
+      { seccion: "H", autor: "TUC", titulo: "arm", texto: "H / TUC / arm" },
+      { seccion: "H", autor: "BEV", titulo: "his", texto: "H / BEV / his" },
+
+      // GEOGRAFÍA Y VIAJES
+      { seccion: "G", autor: "KAP", titulo: "via", texto: "G / KAP / via" },
+      { seccion: "G", autor: "HUM", titulo: "not", texto: "G / HUM / not" },
+      { seccion: "G", autor: "DAR", titulo: "via", texto: "G / DAR / via" },
+
+      // FILOSOFÍA
+      { seccion: "F", autor: "PLA", titulo: "rep", texto: "F / PLA / rep" },
+      { seccion: "F", autor: "NIE", titulo: "asi", texto: "F / NIE / asi" },
+      { seccion: "F", autor: "ORT", titulo: "reb", texto: "F / ORT / reb" },
+
+      // ENSAYO
+      { seccion: "E", autor: "SAG", titulo: "hom", texto: "E / SAG / hom" },
+      { seccion: "E", autor: "HAR", titulo: "mun", texto: "E / HAR / mun" },
+      { seccion: "E", autor: "CHA", titulo: "ori", texto: "E / CHA / ori" },
+
+      // CIENCIAS
+      { seccion: "C", autor: "HAW", titulo: "bre", texto: "C / HAW / bre" },
+      { seccion: "C", autor: "SAG", titulo: "cos", texto: "C / SAG / cos" },
+      { seccion: "C", autor: "DAR", titulo: "ori", texto: "C / DAR / ori" },
+
+      // ARTE
+      { seccion: "A", autor: "GOM", titulo: "his", texto: "A / GOM / his" },
+      { seccion: "A", autor: "GOM", titulo: "art", texto: "A / GOM / art" },
+      { seccion: "A", autor: "BER", titulo: "fot", texto: "A / BER / fot" },
+
+      // CANARIAS
+      { seccion: "CAN", autor: "VIE", titulo: "his", texto: "CAN / VIE / his" },
+      { seccion: "CAN", autor: "MOR", titulo: "his", texto: "CAN / MOR / his" },
+      { seccion: "CAN", autor: "CRO", titulo: "his", texto: "CAN / CRO / his" },
+
+      // REFERENCIA Y CONSULTA
+      { seccion: "R", autor: "RAE", titulo: "dic", texto: "R / RAE / dic" },
+      { seccion: "R", autor: "ESP", titulo: "enc", texto: "R / ESP / enc" }
     ];
 
+    // BANCO CDU LIMPIO (Se ordena dinámicamente mediante algoritmo oficial)
     const BANCO_CDU = [
-      { cdu: "94(460)\".../14\"", valor: 1 },
-      { cdu: "94(460)\"13/15\"", valor: 2 },
-      { cdu: "94(460)\"14\"", valor: 3 },
-      { cdu: "94(460)\"14/15\"", valor: 4 },
-      { cdu: "94(460)\"14/16\"", valor: 5 },
-      { cdu: "94(460)\"1497/1507\"", valor: 6 },
-      { cdu: "94(460)\"15/17\"", valor: 7 },
-      { cdu: "94(460)\"1517/1648\"", valor: 8 },
-      { cdu: "94(460)\"1797\"(093)", valor: 9 },
-      { cdu: "94(460).09", valor: 10 },
-      { cdu: "61:001.891(460)\"19\"", valor: 11 },
-      { cdu: "61:001.891\"1991\"", valor: 12 },
-      { cdu: "61:001.895", valor: 13 },
-      { cdu: "61:1\"16/17\"", valor: 14 },
-      { cdu: "615:004(063)", valor: 15 },
-      { cdu: "02", valor: 1 },
-      { cdu: "027", valor: 2 },
-      { cdu: "025.3", valor: 3 },
-      { cdu: "025.4", valor: 4 },
-      { cdu: "087.5", valor: 5 },
-      { cdu: "1", valor: 6 },
-      { cdu: "159.9", valor: 7 },
-      { cdu: "316", valor: 8 },
-      { cdu: "32", valor: 9 },
-      { cdu: "33", valor: 10 },
-      { cdu: "37", valor: 11 },
-      { cdu: "398", valor: 12 },
-      { cdu: "502", valor: 13 },
-      { cdu: "51", valor: 14 },
-      { cdu: "53", valor: 15 },
-      { cdu: "54", valor: 16 },
-      { cdu: "57", valor: 17 },
-      { cdu: "61", valor: 18 },
-      { cdu: "62", valor: 19 },
-      { cdu: "7", valor: 20 },
-      { cdu: "72", valor: 21 },
-      { cdu: "75", valor: 22 },
-      { cdu: "77", valor: 23 },
-      { cdu: "78", valor: 24 },
-      { cdu: "82-1", valor: 25 },
-      { cdu: "82-2", valor: 26 },
-      { cdu: "82-3", valor: 27 },
-      { cdu: "821.134.2", valor: 28 },
-      { cdu: "929", valor: 29 },
-      { cdu: "94", valor: 30 },
-      { cdu: "94(460)", valor: 31 },
-      { cdu: "908(460.41)", valor: 32 },
-      { cdu: "910", valor: 33 },
-      { cdu: "913", valor: 34 },
-      { cdu: "930.85", valor: 35 }
+      // Auxiliares de tiempo y especiales (Supuestos Santa Cruz)
+      { cdu: "94(460)\".../14\"" },
+      { cdu: "94(460)\"13/15\"" },
+      { cdu: "94(460)\"14\"" },
+      { cdu: "94(460)\"14/15\"" },
+      { cdu: "94(460)\"14/16\"" },
+      { cdu: "94(460)\"1497/1507\"" },
+      { cdu: "94(460)\"15/17\"" },
+      { cdu: "94(460)\"1517/1648\"" },
+      { cdu: "94(460)\"1797\"(093)" },
+      { cdu: "94(460).09" },
+
+      // Relaciones y auxiliares variados
+      { cdu: "61:001.891(460)\"19\"" },
+      { cdu: "61:001.891\"1991\"" },
+      { cdu: "61:001.895" },
+      { cdu: "61:002" },
+      { cdu: "61:004" },
+      { cdu: "61:004(083)" },
+      { cdu: "61:1\"16/17\"" },
+      { cdu: "61:1Jaspers" },
+      { cdu: "615:004(063)" },
+
+      // Desempates de signos +, /, :, ::, =, (0...), (1/9), (=...), "...", A/Z, -0, .0
+      { cdu: "54+66" },
+      { cdu: "54" },
+      { cdu: "543:546.13" },
+      { cdu: "543::546.13" },
+      { cdu: "546" },
+      { cdu: "546.62" },
+      { cdu: "547.2/.8" },
+      { cdu: "547.233" },
+      { cdu: "547.3/.8" },
+      { cdu: "547.5" },
+      { cdu: "34/35" },
+      { cdu: "34:342.7" },
+      { cdu: "34::342.7" },
+      { cdu: "34=134.2" },
+      { cdu: "342(460)" },
+      { cdu: "342.08(450)" },
+      { cdu: "35.08(460)" },
+      { cdu: "35.08(460)\"19\"" },
+      { cdu: "35.08(460)\"1994\"" },
+      { cdu: "35.084" },
+      { cdu: "364-03" },
+      { cdu: "364.3:65" },
+      { cdu: "364.3=26" },
+      { cdu: "364.3(034)" },
+      { cdu: "364.3(460)" },
+      { cdu: "364.3(=132)" },
+      { cdu: "364.3\"1899\"" },
+      { cdu: "364.3\"19\"" },
+      { cdu: "364.3Kant" },
+      { cdu: "364.3.014" },
+
+      // Clases principales generales
+      { cdu: "02" },
+      { cdu: "025.3" },
+      { cdu: "025.4" },
+      { cdu: "027" },
+      { cdu: "087.5" },
+      { cdu: "1" },
+      { cdu: "159.9" },
+      { cdu: "316" },
+      { cdu: "32" },
+      { cdu: "33" },
+      { cdu: "37" },
+      { cdu: "398" },
+      { cdu: "502" },
+      { cdu: "51" },
+      { cdu: "53" },
+      { cdu: "57" },
+      { cdu: "61" },
+      { cdu: "62" },
+      { cdu: "7" },
+      { cdu: "72" },
+      { cdu: "75" },
+      { cdu: "77" },
+      { cdu: "78" },
+      { cdu: "82-1" },
+      { cdu: "82-2" },
+      { cdu: "82-3" },
+      { cdu: "821.134.2" },
+      { cdu: "908(460.41)" },
+      { cdu: "910" },
+      { cdu: "913" },
+      { cdu: "929" },
+      { cdu: "930.85" },
+      { cdu: "94" },
+      { cdu: "94(460)" }
     ];
 
     const BANCO_MARC21 = [
@@ -403,8 +436,8 @@
             <div class="text-sm font-mono font-bold text-slate-800">${item.texto}</div>
           </div>
           <div class="flex space-x-1">
-            <button onclick="moverItem('lista-tejuelos', ${index}, -1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
-            <button onclick="moverItem('lista-tejuelos', ${index}, 1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, -1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, 1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
           </div>
         `;
         container.appendChild(card);
@@ -426,8 +459,8 @@
             <span class="font-mono font-bold text-slate-800">${item.cdu}</span>
           </div>
           <div class="flex space-x-1">
-            <button onclick="moverItem('lista-cdu', ${index}, -1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
-            <button onclick="moverItem('lista-cdu', ${index}, 1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, -1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, 1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
           </div>
         `;
         container.appendChild(card);
@@ -462,17 +495,57 @@
       new Sortable(document.getElementById("lista-cdu"), { animation: 150 });
     }
 
-    function moverItem(containerId, index, direccion) {
-      const container = document.getElementById(containerId);
-      const items = Array.from(container.children);
-      const newIndex = index + direccion;
-      if (newIndex >= 0 && newIndex < items.length) {
-        if (direccion === -1) {
-          container.insertBefore(items[index], items[newIndex]);
-        } else {
-          container.insertBefore(items[newIndex], items[index]);
-        }
+    function moverCard(btn, direccion) {
+      const card = btn.closest(".item-tejuelo, .item-cdu, [id^='card-']");
+      const container = card.parentElement;
+      if (direccion === -1 && card.previousElementSibling) {
+        container.insertBefore(card, card.previousElementSibling);
+      } else if (direccion === 1 && card.nextElementSibling) {
+        container.insertBefore(card.nextElementSibling, card);
       }
+    }
+
+    // MOTOR DE ORDENACIÓN ESTRICTA CDU (Jerarquía oficial + fracción decimal)
+    function claveOrdenCDU(cdu) {
+      // Jerarquía oficial de prelación de signos de la CDU:
+      // + (\uE000) < / (\uE001) < Número simple (\uE002) < : (\uE003) < :: (\uE004) < = (\uE005)
+      // < (0...) (\uE006) < (1/9) (\uE007) < (=...) (\uE008) < "..." (\uE009) < * (\uE00A)
+      // < A/Z (\uE00B) < -0 (\uE00C) < -1/-9 (\uE00D) < .0 (\uE00E) < ' (\uE00F)
+      let s = cdu.replace(/\s+/g, "");
+
+      s = s.replace(/\(\=/g, "\uE008");       // (=...) Razas y pueblos
+      s = s.replace(/\(0/g, "\uE0060");       // (0...) Forma
+      s = s.replace(/\(/g, "\uE007");         // (1/9) Lugar
+      s = s.replace(/\)/g, "");               // Cierre paréntesis neutro
+      s = s.replace(/::/g, "\uE004");         // :: Relación fija
+      s = s.replace(/:/g, "\uE003");          // : Relación simple
+      s = s.replace(/\+/g, "\uE000");         // + Adición
+
+      // Barra / (extensión): va antes que el número simple (\uE002)
+      s = s.replace(/"\.\.\.\//g, "\"\uE000"); // ".../14" inicio indeterminado primero
+      s = s.replace(/\//g, "\uE001");         // / Extensión
+
+      s = s.replace(/=/g, "\uE005");          // = Lengua
+
+      // Comillas de tiempo "..."
+      s = s.replace(/"([^"]*)"/g, (_, contenido) => "\uE009" + contenido + "\uE002");
+
+      s = s.replace(/\*/g, "\uE00A");         // * Notaciones ajenas
+      s = s.replace(/([A-Za-zÁÉÍÓÚÑáéíóúñ]+)/g, "\uE00B$1"); // A/Z Alfabético
+      s = s.replace(/-0/g, "\uE00C0");        // -0 Auxiliares comunes
+      s = s.replace(/-/g, "\uE00D");          // -1/-9 Auxiliares especiales de guion
+      s = s.replace(/\.0/g, "\uE00E0");       // .0 Auxiliares especiales punto cero
+      s = s.replace(/'/g, "\uE00F");          // ' Apóstrofo
+      s = s.replace(/\./g, "");               // Punto visual de 3 cifras
+
+      // Marcador de fin de número simple (\uE002) antes de cualquier auxiliar restrictivo
+      return s.replace(/([\uE003-\uE00F])/g, "\uE002$1") + "\uE002";
+    }
+
+    function compararCDU(a, b) {
+      const ka = claveOrdenCDU(a.cdu);
+      const kb = claveOrdenCDU(b.cdu);
+      return ka < kb ? -1 : (ka > kb ? 1 : 0);
     }
 
     // COMPROBACIÓN Y MARCADO VISUAL EN ROJO/VERDE
@@ -482,9 +555,9 @@
       const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
       
       const correcto = [...seleccionados].sort((a, b) => {
-        if (a.seccion !== b.seccion) return a.seccion.localeCompare(b.seccion);
-        if (a.autor !== b.autor) return a.autor.localeCompare(b.autor);
-        return a.titulo.localeCompare(b.titulo);
+        if (a.seccion !== b.seccion) return a.seccion.localeCompare(b.seccion, "es");
+        if (a.autor !== b.autor) return a.autor.localeCompare(b.autor, "es");
+        return a.titulo.localeCompare(b.titulo, "es");
       });
 
       let aciertos = 0;
@@ -492,9 +565,9 @@
         const item = JSON.parse(card.dataset.id);
         if (item.texto === correcto[index].texto) {
           aciertos++;
-          card.className = "bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+          card.className = "item-tejuelo bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
         } else {
-          card.className = "bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+          card.className = "item-tejuelo bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
         }
       });
 
@@ -523,16 +596,16 @@
       const tarjetas = Array.from(container.children);
       const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
       
-      const correcto = [...seleccionados].sort((a, b) => a.valor - b.valor);
+      const correcto = [...seleccionados].sort(compararCDU);
 
       let aciertos = 0;
       tarjetas.forEach((card, index) => {
         const item = JSON.parse(card.dataset.id);
         if (item.cdu === correcto[index].cdu) {
           aciertos++;
-          card.className = "bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+          card.className = "item-cdu bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
         } else {
-          card.className = "bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+          card.className = "item-cdu bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
         }
       });
 
