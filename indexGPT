@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Examen Práctico - Auxiliar de Biblioteca | V2.0</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SortableJS para Drag and Drop -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.468.0"></script>
+  <style>
+    .sortable-ghost { opacity: 0.4; background-color: #f3f4f6; }
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+  
+    .v2-panel { background:#fff; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-bottom:18px; }
+    .item-correct { border:2px solid #059669 !important; background:#ecfdf5 !important; }
+    .item-wrong { border:2px solid #dc2626 !important; background:#fef2f2 !important; }
+    .item-tejuelo button:focus-visible, .item-cdu button:focus-visible, button:focus-visible { outline:3px solid #f59e0b; outline-offset:2px; }
+    .stat-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- HEADER FIJO Y CRONÓMETRO -->
+  <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-md border-b border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <i data-lucide="book-open" class="text-amber-400 w-7 h-7"></i>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">Simulador Práctico - Oposiciones Biblioteca</h1>
+          <p class="text-xs text-slate-400">Ayto. de Santa Cruz de Tenerife • Versión 2.0</p>
+        </div>
+      </div>
+
+      <!-- Reloj / Cronómetro -->
+      <div class="flex items-center space-x-4 bg-slate-800 px-4 py-2 rounded-lg border border-slate-700">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="timer" class="text-amber-400 w-5 h-5"></i>
+          <span id="cronometro" class="font-mono text-xl font-bold text-amber-300">00:00</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <button id="btn-toggle-timer" onclick="toggleTimer()" class="p-1.5 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition" title="Iniciar / Pausar">
+            <i id="icon-play-pause" data-lucide="play" class="w-4 h-4"></i>
+          </button>
+          <button onclick="resetTimer()" class="p-1.5 hover:bg-slate-700 rounded text-slate-300 hover:text-white transition" title="Reiniciar Reloj">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón Generar Nuevo Examen -->
+      <button onclick="generarNuevoExamen()" class="flex items-center space-x-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-semibold px-4 py-2 rounded-lg transition shadow">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span>Nuevo Examen Aleatorio</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVEGACIÓN POR PESTAÑAS / MÓDULOS -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+    <div class="flex space-x-2 border-b border-slate-300 mb-6 overflow-x-auto pb-1">
+      <button onclick="cambiarTab('tejuelos')" id="tab-tejuelos" class="tab-btn px-4 py-2 font-medium text-sm rounded-t-lg bg-amber-500 text-slate-950 flex items-center space-x-2">
+        <i data-lucide="align-justify" class="w-4 h-4"></i>
+        <span>Bloque 1: Ordenar Tejuelos</span>
+      </button>
+      <button onclick="cambiarTab('cdu')" id="tab-cdu" class="tab-btn px-4 py-2 font-medium text-sm rounded-t-lg bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center space-x-2">
+        <i data-lucide="binary" class="w-4 h-4"></i>
+        <span>Bloque 2: Jerarquía CDU</span>
+      </button>
+      <button onclick="cambiarTab('marc')" id="tab-marc" class="tab-btn px-4 py-2 font-medium text-sm rounded-t-lg bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center space-x-2">
+        <i data-lucide="credit-card" class="w-4 h-4"></i>
+        <span>Bloque 3: Flashcards MARC21</span>
+      </button>
+      <button onclick="cambiarTab('historial')" id="tab-historial" class="tab-btn px-4 py-2 font-medium text-sm rounded-t-lg bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center space-x-2">
+        <i data-lucide="history" class="w-4 h-4"></i>
+        <span>Historial</span>
+      </button>
+    </div>
+
+    <!-- MÓDULO 1: TEJUELOS -->
+    <section id="sec-tejuelos" class="tab-content block">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Ejercicio 1: Ordenación de Tejuelos (20 elementos)</h2>
+            <p class="text-sm text-slate-600">Ordena alfabéticamente por: 1º Sección, 2º Autor (MAYÚSCULAS) y 3º Título (minúsculas).</p>
+          </div>
+          <button onclick="comprobarTejuelos()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Comprobar Respuestas</span>
+          </button>
+        </div>
+
+        <div id="feedback-tejuelos" class="hidden mb-4 p-4 rounded-lg"></div>
+
+        <!-- Solución desplegable -->
+        <div id="solucion-tejuelos" class="hidden mb-6 p-4 bg-slate-900 text-slate-100 rounded-lg">
+          <h3 class="font-bold text-amber-400 mb-2 flex items-center space-x-2">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Orden Correcto Oficial:</span>
+          </h3>
+          <ol id="lista-solucion-tejuelos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs font-mono"></ol>
+        </div>
+
+        <!-- Lista de Tejuelos Interactiva -->
+        <div id="lista-tejuelos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2: CDU -->
+    <section id="sec-cdu" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Ejercicio 2: Ordenación de Signaturas CDU (10 elementos)</h2>
+            <p class="text-sm text-slate-600">Ordena de menor a mayor respetando la jerarquía estricta de auxiliares de la CDU.</p>
+          </div>
+          <button onclick="comprobarCDU()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition flex items-center space-x-2">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Comprobar Respuestas</span>
+          </button>
+        </div>
+
+        <div id="feedback-cdu" class="hidden mb-4 p-4 rounded-lg"></div>
+
+        <!-- Solución desplegable CDU -->
+        <div id="solucion-cdu" class="hidden mb-6 p-4 bg-slate-900 text-slate-100 rounded-lg">
+          <h3 class="font-bold text-amber-400 mb-2 flex items-center space-x-2">
+            <i data-lucide="check-square" class="w-4 h-4"></i>
+            <span>Orden Correcto Oficial:</span>
+          </h3>
+          <ol id="lista-solucion-cdu" class="space-y-1 text-xs font-mono"></ol>
+        </div>
+
+        <div id="lista-cdu" class="space-y-2 max-w-3xl mx-auto"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: MARC21 -->
+    <section id="sec-marc" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+        <div class="mb-4">
+          <h2 class="text-xl font-bold text-slate-900">Ejercicio 3: Tarjetas de Memoria MARC21</h2>
+          <p class="text-sm text-slate-600">Haz clic en cada tarjeta para girarla y memorizar la etiqueta del formato MARC21.</p>
+        </div>
+        <div id="grid-marc" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section id="sec-historial" class="tab-content hidden">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+        <h2 class="text-xl font-bold text-slate-900 mb-4">Registro de Intentos</h2>
+        <div id="tabla-historial" class="overflow-x-auto"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // BANCOS DE DATOS EXTENDIDOS
+    const BANCO_TEJUELOS = [
+      // INFANTIL - NARRATIVA
+      { seccion: "I-N", autor: "DAH", titulo: "mat", texto: "I-N / DAH / mat" },
+      { seccion: "I-N", autor: "DAH", titulo: "cha", texto: "I-N / DAH / cha" },
+      { seccion: "I-N", autor: "ROW", titulo: "har", texto: "I-N / ROW / har" },
+      { seccion: "I-N", autor: "SAI", titulo: "pri", texto: "I-N / SAI / pri" },
+      { seccion: "I-N", autor: "LIN", titulo: "his", texto: "I-N / LIN / his" },
+      { seccion: "I-N", autor: "CAR", titulo: "ali", texto: "I-N / CAR / ali" },
+      { seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
+      { seccion: "I-N", autor: "GRE", titulo: "inv", texto: "I-N / GRE / inv" },
+      { seccion: "I-N", autor: "OLL", titulo: "sab", texto: "I-N / OLL / sab" },
+      { seccion: "I-N", autor: "PER", titulo: "cue", texto: "I-N / PER / cue" },
+      { seccion: "I-N", autor: "PER", titulo: "gue", texto: "I-N / PER / gue" },
+      { seccion: "I-N", autor: "PES", titulo: "nat", texto: "I-N / PES / nat" },
+      { seccion: "I-N", autor: "VAL", titulo: "lag", texto: "I-N / VAL / lag" },
+      { seccion: "I-N", autor: "VAL", titulo: "rit", texto: "I-N / VAL / rit" },
+      { seccion: "I-N", autor: "VAL", titulo: "", texto: "I-N / VAL" },
+
+      // INFANTIL - CONOCIMIENTO
+      { seccion: "I-C", autor: "WIL", titulo: "enc", texto: "I-C / WIL / enc" },
+      { seccion: "I-C", autor: "BUR", titulo: "ani", texto: "I-C / BUR / ani" },
+      { seccion: "I-C", autor: "GOM", titulo: "pla", texto: "I-C / GOM / pla" },
+      { seccion: "I-C", autor: "GAR", titulo: "cue", texto: "I-C / GAR / cue" },
+
+      // INFANTIL - POESÍA
+      { seccion: "I-P", autor: "NER", titulo: "lib", texto: "I-P / NER / lib" },
+      { seccion: "I-P", autor: "GLA", titulo: "ver", texto: "I-P / GLA / ver" },
+      { seccion: "I-P", autor: "LOB", titulo: "ver", texto: "I-P / LOB / ver" },
+
+      // INFANTIL - CÓMIC
+      { seccion: "I-CM", autor: "GOS", titulo: "tom", texto: "I-CM / GOS / tom" },
+      { seccion: "I-CM", autor: "PIL", titulo: "dia", texto: "I-CM / PIL / dia" },
+      { seccion: "I-CM", autor: "KIN", titulo: "don", texto: "I-CM / KIN / don" },
+
+      // NARRATIVA
+      { seccion: "N", autor: "CER", titulo: "qui", texto: "N / CER / qui" },
+      { seccion: "N", autor: "GAR", titulo: "cie", texto: "N / GAR / cie" },
+      { seccion: "N", autor: "MAR", titulo: "amo", texto: "N / MAR / amo" },
+      { seccion: "N", autor: "DEL", titulo: "som", texto: "N / DEL / som" },
+      { seccion: "N", autor: "ALL", titulo: "cas", texto: "N / ALL / cas" },
+      { seccion: "N", autor: "RUL", titulo: "ped", texto: "N / RUL / ped" },
+      { seccion: "N", autor: "ORW", titulo: "198", texto: "N / ORW / 198" },
+      { seccion: "N", autor: "HUX", titulo: "mun", texto: "N / HUX / mun" },
+      { seccion: "N", autor: "AUS", titulo: "org", texto: "N / AUS / org" },
+      { seccion: "N", autor: "DOS", titulo: "cri", texto: "N / DOS / cri" },
+      { seccion: "N", autor: "ZAM", titulo: "cue", texto: "N / ZAM / cue" },
+      { seccion: "N", autor: "ZAM", titulo: "gab", texto: "N / ZAM / gab" },
+      { seccion: "N", autor: "ZAM", titulo: "mir", texto: "N / ZAM / mir" },
+      { seccion: "N", autor: "ZAM", titulo: "rel", texto: "N / ZAM / rel" },
+      { seccion: "N", autor: "ZAN", titulo: "lov", texto: "N / ZAN / lov" },
+      { seccion: "N", autor: "ZAP", titulo: "del", texto: "N / ZAP / del" },
+
+      // POESÍA
+      { seccion: "P", autor: "LOR", titulo: "rom", texto: "P / LOR / rom" },
+      { seccion: "P", autor: "NER", titulo: "vei", texto: "P / NER / vei" },
+      { seccion: "P", autor: "BEN", titulo: "son", texto: "P / BEN / son" },
+      { seccion: "P", autor: "ALE", titulo: "som", texto: "P / ALE / som" },
+      { seccion: "P", autor: "ABD", titulo: "pla", texto: "P / ABD / pla" },
+      { seccion: "P", autor: "ABE", titulo: "", texto: "P / ABE" },
+      { seccion: "P", autor: "ACO", titulo: "ant", texto: "P / ACO / ant" },
+      { seccion: "P", autor: "ACO", titulo: "del", texto: "P / ACO / del" },
+      { seccion: "P", autor: "ANT", titulo: "", texto: "P / ANT" },
+      { seccion: "P", autor: "ANT", titulo: "ant", texto: "P / ANT / ant" },
+
+      // TEATRO
+      { seccion: "T", autor: "LOR", titulo: "bod", texto: "T / LOR / bod" },
+      { seccion: "T", autor: "CAL", titulo: "vid", texto: "T / CAL / vid" },
+      { seccion: "T", autor: "SHA", titulo: "ham", texto: "T / SHA / ham" },
+      { seccion: "T", autor: "BUÑ", titulo: "his", texto: "T / BUÑ / his" },
+
+      // BIOGRAFÍAS
+      { seccion: "B", autor: "GIB", titulo: "ste", texto: "B / GIB / ste" },
+      { seccion: "B", autor: "ISA", titulo: "fri", texto: "B / ISA / fri" },
+      { seccion: "B", autor: "MAN", titulo: "leo", texto: "B / MAN / leo" },
+      { seccion: "B", autor: "WAL", titulo: "ein", texto: "B / WAL / ein" },
+
+      // CÓMIC
+      { seccion: "CM", autor: "HER", titulo: "mor", texto: "CM / HER / mor" },
+      { seccion: "CM", autor: "GRO", titulo: "con", texto: "CM / GRO / con" },
+      { seccion: "CM", autor: "MIL", titulo: "per", texto: "CM / MIL / per" },
+      { seccion: "CM", autor: "MOE", titulo: "wat", texto: "CM / MOE / wat" },
+
+      // HISTORIA
+      { seccion: "H", autor: "HAR", titulo: "bre", texto: "H / HAR / bre" },
+      { seccion: "H", autor: "TUC", titulo: "arm", texto: "H / TUC / arm" },
+      { seccion: "H", autor: "BEV", titulo: "his", texto: "H / BEV / his" },
+
+      // GEOGRAFÍA Y VIAJES
+      { seccion: "G", autor: "KAP", titulo: "via", texto: "G / KAP / via" },
+      { seccion: "G", autor: "HUM", titulo: "not", texto: "G / HUM / not" },
+      { seccion: "G", autor: "DAR", titulo: "via", texto: "G / DAR / via" },
+
+      // FILOSOFÍA
+      { seccion: "F", autor: "PLA", titulo: "rep", texto: "F / PLA / rep" },
+      { seccion: "F", autor: "NIE", titulo: "asi", texto: "F / NIE / asi" },
+      { seccion: "F", autor: "ORT", titulo: "reb", texto: "F / ORT / reb" },
+
+      // ENSAYO
+      { seccion: "E", autor: "SAG", titulo: "hom", texto: "E / SAG / hom" },
+      { seccion: "E", autor: "HAR", titulo: "mun", texto: "E / HAR / mun" },
+      { seccion: "E", autor: "CHA", titulo: "ori", texto: "E / CHA / ori" },
+
+      // CIENCIAS
+      { seccion: "C", autor: "HAW", titulo: "bre", texto: "C / HAW / bre" },
+      { seccion: "C", autor: "SAG", titulo: "cos", texto: "C / SAG / cos" },
+      { seccion: "C", autor: "DAR", titulo: "ori", texto: "C / DAR / ori" },
+
+      // ARTE
+      { seccion: "A", autor: "GOM", titulo: "his", texto: "A / GOM / his" },
+      { seccion: "A", autor: "GOM", titulo: "art", texto: "A / GOM / art" },
+      { seccion: "A", autor: "BER", titulo: "fot", texto: "A / BER / fot" },
+
+      // CANARIAS
+      { seccion: "CAN", autor: "VIE", titulo: "his", texto: "CAN / VIE / his" },
+      { seccion: "CAN", autor: "MOR", titulo: "his", texto: "CAN / MOR / his" },
+      { seccion: "CAN", autor: "CRO", titulo: "his", texto: "CAN / CRO / his" },
+
+      // REFERENCIA Y CONSULTA
+      { seccion: "R", autor: "RAE", titulo: "dic", texto: "R / RAE / dic" },
+      { seccion: "R", autor: "ESP", titulo: "enc", texto: "R / ESP / enc" }
+    ];
+
+    // BANCO CDU LIMPIO (Se ordena dinámicamente mediante algoritmo oficial)
+    const BANCO_CDU = [
+      // Auxiliares de tiempo y especiales (Supuestos Santa Cruz)
+      { cdu: "94(460)\".../14\"" },
+      { cdu: "94(460)\"13/15\"" },
+      { cdu: "94(460)\"14\"" },
+      { cdu: "94(460)\"14/15\"" },
+      { cdu: "94(460)\"14/16\"" },
+      { cdu: "94(460)\"1497/1507\"" },
+      { cdu: "94(460)\"15/17\"" },
+      { cdu: "94(460)\"1517/1648\"" },
+      { cdu: "94(460)\"1797\"(093)" },
+      { cdu: "94(460).09" },
+
+      // Relaciones y auxiliares variados
+      { cdu: "61:001.891(460)\"19\"" },
+      { cdu: "61:001.891\"1991\"" },
+      { cdu: "61:001.895" },
+      { cdu: "61:002" },
+      { cdu: "61:004" },
+      { cdu: "61:004(083)" },
+      { cdu: "61:1\"16/17\"" },
+      { cdu: "61:1Jaspers" },
+      { cdu: "615:004(063)" },
+
+      // Desempates de signos +, /, :, ::, =, (0...), (1/9), (=...), "...", A/Z, -0, .0
+      { cdu: "54+66" },
+      { cdu: "54" },
+      { cdu: "543:546.13" },
+      { cdu: "543::546.13" },
+      { cdu: "546" },
+      { cdu: "546.62" },
+      { cdu: "547.2/.8" },
+      { cdu: "547.233" },
+      { cdu: "547.3/.8" },
+      { cdu: "547.5" },
+      { cdu: "34/35" },
+      { cdu: "34:342.7" },
+      { cdu: "34::342.7" },
+      { cdu: "34=134.2" },
+      { cdu: "342(460)" },
+      { cdu: "342.08(450)" },
+      { cdu: "35.08(460)" },
+      { cdu: "35.08(460)\"19\"" },
+      { cdu: "35.08(460)\"1994\"" },
+      { cdu: "35.084" },
+      { cdu: "364-03" },
+      { cdu: "364.3:65" },
+      { cdu: "364.3=26" },
+      { cdu: "364.3(034)" },
+      { cdu: "364.3(460)" },
+      { cdu: "364.3(=132)" },
+      { cdu: "364.3\"1899\"" },
+      { cdu: "364.3\"19\"" },
+      { cdu: "364.3Kant" },
+      { cdu: "364.3.014" },
+
+      // Clases principales generales
+      { cdu: "02" },
+      { cdu: "025.3" },
+      { cdu: "025.4" },
+      { cdu: "027" },
+      { cdu: "087.5" },
+      { cdu: "1" },
+      { cdu: "159.9" },
+      { cdu: "316" },
+      { cdu: "32" },
+      { cdu: "33" },
+      { cdu: "37" },
+      { cdu: "398" },
+      { cdu: "502" },
+      { cdu: "51" },
+      { cdu: "53" },
+      { cdu: "57" },
+      { cdu: "61" },
+      { cdu: "62" },
+      { cdu: "7" },
+      { cdu: "72" },
+      { cdu: "75" },
+      { cdu: "77" },
+      { cdu: "78" },
+      { cdu: "82-1" },
+      { cdu: "82-2" },
+      { cdu: "82-3" },
+      { cdu: "821.134.2" },
+      { cdu: "908(460.41)" },
+      { cdu: "910" },
+      { cdu: "913" },
+      { cdu: "929" },
+      { cdu: "930.85" },
+      { cdu: "94" },
+      { cdu: "94(460)" }
+    ];
+
+    const BANCO_MARC21 = [
+      { campo: "017", desc: "Número de Depósito Legal" },
+      { campo: "020", desc: "ISBN (International Standard Book Number)" },
+      { campo: "080", desc: "Número de la CDU" },
+      { campo: "100", desc: "Autor principal (Nombre de persona)" },
+      { campo: "245", desc: "Título propiamente dicho y mención de responsabilidad" },
+      { campo: "250", desc: "Mención de edición (ej. 2ª ed. rev.)" },
+      { campo: "260", desc: "Publicación, distribución, etc." },
+      { campo: "300", desc: "Descripción física (pág., dimensiones)" },
+      { campo: "336", desc: "Tipo de contenido (RDA)" },
+      { campo: "337", desc: "Tipo de medio (RDA)" },
+      { campo: "338", desc: "Tipo de soporte (RDA)" },
+      { campo: "500", desc: "Nota general" },
+      { campo: "521", desc: "Nota de público objetivo / Restricción de edad" },
+      { campo: "546", desc: "Nota de lengua del documento" },
+      { campo: "586", desc: "Nota de premios o reconocimientos" },
+      { campo: "655", desc: "Materia - Término de género/forma" }
+    ];
+
+    let tejuelosActuales = [];
+    let cduActual = [];
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let timerRunning = false;
+
+    window.onload = function() {
+      lucide.createIcons();
+      generarNuevoExamen();
+      cargarHistorial();
+      inicializarSortable();
+    };
+
+    function generarNuevoExamen() {
+      resetTimer();
+      
+      const tejuelosMezclados = [...BANCO_TEJUELOS].sort(() => Math.random() - 0.5);
+      tejuelosActuales = tejuelosMezclados.slice(0, 20);
+      renderTejuelos(tejuelosActuales);
+
+      const cduMezclada = [...BANCO_CDU].sort(() => Math.random() - 0.5);
+      cduActual = cduMezclada.slice(0, 10);
+      renderCDU(cduActual);
+
+      renderMARC();
+
+      document.getElementById("feedback-tejuelos").classList.add("hidden");
+      document.getElementById("solucion-tejuelos").classList.add("hidden");
+      document.getElementById("feedback-cdu").classList.add("hidden");
+      document.getElementById("solucion-cdu").classList.add("hidden");
+    }
+
+    function renderTejuelos(items) {
+      const container = document.getElementById("lista-tejuelos");
+      container.innerHTML = "";
+      items.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.id = `card-tejuelo-${index}`;
+        card.className = "item-tejuelo bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:shadow transition";
+        card.dataset.id = JSON.stringify(item);
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-bold text-slate-400">#${index + 1}</span>
+            <div class="text-sm font-mono font-bold text-slate-800">${item.texto}</div>
+          </div>
+          <div class="flex space-x-1">
+            <button onclick="moverCard(this, -1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, 1)" class="p-1 hover:bg-amber-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function renderCDU(items) {
+      const container = document.getElementById("lista-cdu");
+      container.innerHTML = "";
+      items.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.id = `card-cdu-${index}`;
+        card.className = "item-cdu bg-slate-50 border border-slate-300 p-3 rounded-lg flex items-center justify-between cursor-move shadow-sm hover:bg-slate-100 transition";
+        card.dataset.id = JSON.stringify(item);
+        card.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="text-xs font-bold text-slate-400">#${index + 1}</span>
+            <span class="font-mono font-bold text-slate-800">${item.cdu}</span>
+          </div>
+          <div class="flex space-x-1">
+            <button onclick="moverCard(this, -1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+            <button onclick="moverCard(this, 1)" class="p-1 hover:bg-slate-200 rounded"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function renderMARC() {
+      const container = document.getElementById("grid-marc");
+      container.innerHTML = "";
+      BANCO_MARC21.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "perspective-1000 h-32 cursor-pointer";
+        card.onclick = function() { card.querySelector(".inner-card").classList.toggle("rotate-y-180"); };
+        card.innerHTML = `
+          <div class="inner-card relative w-full h-full transform-style-3d transition-transform duration-500 shadow-md rounded-xl">
+            <div class="absolute inset-0 bg-slate-900 text-white flex flex-col items-center justify-center rounded-xl backface-hidden p-4">
+              <span class="text-xs text-amber-400 font-bold mb-1">CAMPO MARC21</span>
+              <span class="text-2xl font-black font-mono">${item.campo}</span>
+            </div>
+            <div class="absolute inset-0 bg-amber-400 text-slate-950 flex items-center justify-center rounded-xl backface-hidden rotate-y-180 p-4 text-center font-bold text-sm">
+              ${item.desc}
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function inicializarSortable() {
+      new Sortable(document.getElementById("lista-tejuelos"), { animation: 150 });
+      new Sortable(document.getElementById("lista-cdu"), { animation: 150 });
+    }
+
+    function moverCard(btn, direccion) {
+      const card = btn.closest(".item-tejuelo, .item-cdu, [id^='card-']");
+      const container = card.parentElement;
+      if (direccion === -1 && card.previousElementSibling) {
+        container.insertBefore(card, card.previousElementSibling);
+      } else if (direccion === 1 && card.nextElementSibling) {
+        container.insertBefore(card.nextElementSibling, card);
+      }
+    }
+
+    // MOTOR DE ORDENACIÓN ESTRICTA CDU (Jerarquía oficial + fracción decimal)
+    function claveOrdenCDU(cdu) {
+      // Jerarquía oficial de prelación de signos de la CDU:
+      // + (\uE000) < / (\uE001) < Número simple (\uE002) < : (\uE003) < :: (\uE004) < = (\uE005)
+      // < (0...) (\uE006) < (1/9) (\uE007) < (=...) (\uE008) < "..." (\uE009) < * (\uE00A)
+      // < A/Z (\uE00B) < -0 (\uE00C) < -1/-9 (\uE00D) < .0 (\uE00E) < ' (\uE00F)
+      let s = cdu.replace(/\s+/g, "");
+
+      s = s.replace(/\(\=/g, "\uE008");       // (=...) Razas y pueblos
+      s = s.replace(/\(0/g, "\uE0060");       // (0...) Forma
+      s = s.replace(/\(/g, "\uE007");         // (1/9) Lugar
+      s = s.replace(/\)/g, "");               // Cierre paréntesis neutro
+      s = s.replace(/::/g, "\uE004");         // :: Relación fija
+      s = s.replace(/:/g, "\uE003");          // : Relación simple
+      s = s.replace(/\+/g, "\uE000");         // + Adición
+
+      // Barra / (extensión): va antes que el número simple (\uE002)
+      s = s.replace(/"\.\.\.\//g, "\"\uE000"); // ".../14" inicio indeterminado primero
+      s = s.replace(/\//g, "\uE001");         // / Extensión
+
+      s = s.replace(/=/g, "\uE005");          // = Lengua
+
+      // Comillas de tiempo "..."
+      s = s.replace(/"([^"]*)"/g, (_, contenido) => "\uE009" + contenido + "\uE002");
+
+      s = s.replace(/\*/g, "\uE00A");         // * Notaciones ajenas
+      s = s.replace(/([A-Za-zÁÉÍÓÚÑáéíóúñ]+)/g, "\uE00B$1"); // A/Z Alfabético
+      s = s.replace(/-0/g, "\uE00C0");        // -0 Auxiliares comunes
+      s = s.replace(/-/g, "\uE00D");          // -1/-9 Auxiliares especiales de guion
+      s = s.replace(/\.0/g, "\uE00E0");       // .0 Auxiliares especiales punto cero
+      s = s.replace(/'/g, "\uE00F");          // ' Apóstrofo
+      s = s.replace(/\./g, "");               // Punto visual de 3 cifras
+
+      // Marcador de fin de número simple (\uE002) antes de cualquier auxiliar restrictivo
+      return s.replace(/([\uE003-\uE00F])/g, "\uE002$1") + "\uE002";
+    }
+
+    function compararCDU(a, b) {
+      const ka = claveOrdenCDU(a.cdu);
+      const kb = claveOrdenCDU(b.cdu);
+      return ka < kb ? -1 : (ka > kb ? 1 : 0);
+    }
+
+    // COMPROBACIÓN Y MARCADO VISUAL EN ROJO/VERDE
+    function comprobarTejuelos() {
+      const container = document.getElementById("lista-tejuelos");
+      const tarjetas = Array.from(container.children);
+      const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
+      
+      const correcto = [...seleccionados].sort((a, b) => {
+        if (a.seccion !== b.seccion) return a.seccion.localeCompare(b.seccion, "es");
+        if (a.autor !== b.autor) return a.autor.localeCompare(b.autor, "es");
+        return a.titulo.localeCompare(b.titulo, "es");
+      });
+
+      let aciertos = 0;
+      tarjetas.forEach((card, index) => {
+        const item = JSON.parse(card.dataset.id);
+        if (item.texto === correcto[index].texto) {
+          aciertos++;
+          card.className = "item-tejuelo bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        } else {
+          card.className = "item-tejuelo bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        }
+      });
+
+      const nota = (aciertos * 0.10).toFixed(2);
+      const feedback = document.getElementById("feedback-tejuelos");
+      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-red-100 border-red-300 text-red-900'}`;
+      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos (Marcados en verde los correctos y en rojo los incorrectos). <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
+      feedback.classList.remove("hidden");
+
+      // Desplegar Solución Correcta
+      const divSolucion = document.getElementById("solucion-tejuelos");
+      const listaSolucion = document.getElementById("lista-solucion-tejuelos");
+      listaSolucion.innerHTML = "";
+      correcto.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.innerText = `${idx + 1}. ${item.texto}`;
+        listaSolucion.appendChild(li);
+      });
+      divSolucion.classList.remove("hidden");
+
+      guardarIntento("Tejuelos", `${aciertos}/${seleccionados.length}`, nota);
+    }
+
+    function comprobarCDU() {
+      const container = document.getElementById("lista-cdu");
+      const tarjetas = Array.from(container.children);
+      const seleccionados = tarjetas.map(child => JSON.parse(child.dataset.id));
+      
+      const correcto = [...seleccionados].sort(compararCDU);
+
+      let aciertos = 0;
+      tarjetas.forEach((card, index) => {
+        const item = JSON.parse(card.dataset.id);
+        if (item.cdu === correcto[index].cdu) {
+          aciertos++;
+          card.className = "item-cdu bg-emerald-50 border-2 border-emerald-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        } else {
+          card.className = "item-cdu bg-red-50 border-2 border-red-500 p-3 rounded-lg flex items-center justify-between shadow-sm";
+        }
+      });
+
+      const nota = (aciertos * 0.20).toFixed(2);
+      const feedback = document.getElementById("feedback-cdu");
+      feedback.className = `p-4 rounded-lg border mb-4 ${aciertos === seleccionados.length ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-red-100 border-red-300 text-red-900'}`;
+      feedback.innerHTML = `<strong>Resultado:</strong> ${aciertos} / ${seleccionados.length} aciertos (Marcados en verde los correctos y en rojo los incorrectos). <strong>Puntuación: ${nota} / 2.00 ptos</strong>.`;
+      feedback.classList.remove("hidden");
+
+      // Desplegar Solución Correcta CDU
+      const divSolucion = document.getElementById("solucion-cdu");
+      const listaSolucion = document.getElementById("lista-solucion-cdu");
+      listaSolucion.innerHTML = "";
+      correcto.forEach((item, idx) => {
+        const li = document.createElement("li");
+        li.innerText = `${idx + 1}. ${item.cdu}`;
+        listaSolucion.appendChild(li);
+      });
+      divSolucion.classList.remove("hidden");
+
+      guardarIntento("CDU", `${aciertos}/${seleccionados.length}`, nota);
+    }
+
+    // RELOJ Y HISTORIAL
+    function toggleTimer() {
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        document.getElementById("icon-play-pause").setAttribute("data-lucide", "play");
+      } else {
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          actualizarReloj();
+        }, 1000);
+        document.getElementById("icon-play-pause").setAttribute("data-lucide", "pause");
+      }
+      timerRunning = !timerRunning;
+      lucide.createIcons();
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerSeconds = 0;
+      timerRunning = false;
+      actualizarReloj();
+      document.getElementById("icon-play-pause").setAttribute("data-lucide", "play");
+      lucide.createIcons();
+    }
+
+    function actualizarReloj() {
+      const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+      const secs = (timerSeconds % 60).toString().padStart(2, '0');
+      document.getElementById("cronometro").innerText = `${mins}:${secs}`;
+    }
+
+    function cambiarTab(tab) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".tab-btn").forEach(el => {
+        el.classList.remove("bg-amber-500", "text-slate-950");
+        el.classList.add("bg-slate-200", "text-slate-700");
+      });
+
+      document.getElementById(`sec-${tab}`).classList.remove("hidden");
+      const btn = document.getElementById(`tab-${tab}`);
+      btn.classList.remove("bg-slate-200", "text-slate-700");
+      btn.classList.add("bg-amber-500", "text-slate-950");
+    }
+
+    function guardarIntento(modulo, aciertos, nota) {
+      const historial = JSON.parse(localStorage.getItem("historial_opos_biblio") || "[]");
+      const nuevo = {
+        fecha: new Date().toLocaleString("es-ES"),
+        tiempo: document.getElementById("cronometro").innerText,
+        modulo: modulo,
+        aciertos: aciertos,
+        nota: nota
+      };
+      historial.unshift(nuevo);
+      localStorage.setItem("historial_opos_biblio", JSON.stringify(historial));
+      cargarHistorial();
+    }
+
+    function cargarHistorial() {
+      const historial = JSON.parse(localStorage.getItem("historial_opos_biblio") || "[]");
+      const container = document.getElementById("tabla-historial");
+      if (historial.length === 0) {
+        container.innerHTML = "<p class='text-sm text-slate-500'>Aún no hay intentos registrados.</p>";
+        return;
+      }
+
+      let html = `<table class='w-full text-left border-collapse text-sm'>
+        <thead>
+          <tr class='border-b border-slate-300 text-slate-600'>
+            <th class='py-2'>Fecha</th>
+            <th class='py-2'>Módulo</th>
+            <th class='py-2'>Tiempo</th>
+            <th class='py-2'>Aciertos</th>
+            <th class='py-2'>Nota</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      historial.forEach(row => {
+        html += `<tr class='border-b border-slate-200'>
+          <td class='py-2'>${row.fecha}</td>
+          <td class='py-2 font-bold'>${row.modulo}</td>
+          <td class='py-2 font-mono'>${row.tiempo}</td>
+          <td class='py-2'>${row.aciertos}</td>
+          <td class='py-2 font-bold text-amber-600'>${row.nota} pts</td>
+        </tr>`;
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+  </script>
+
+<script>
+/* ============================================================
+   SIMULADOR AUXILIAR DE BIBLIOTECA — CAPA DE MEJORAS V2.0
+   Mantiene los bancos originales del usuario. Los datos de ejemplo
+   no constituyen un catálogo ni una tabla oficial de ordenación.
+   ============================================================ */
+(() => {
+  'use strict';
+  const STORAGE_KEY = 'historial_opos_biblio_v2';
+  const LEGACY_KEY = 'historial_opos_biblio';
+  const ORDEN_SECCIONES = ['I-N','I-C','I-P','I-CM','N','P','T','B','CM','H','G','F','E','C','A','CAN','R'];
+  const normalizar = v => String(v ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('es');
+  const mezclar = arr => {
+    const a = [...arr];
+    for (let i=a.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  };
+  const safeRead = key => {
+    try { const v=JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(v) ? v : []; }
+    catch { return []; }
+  };
+  const safeWrite = (key, value) => {
+    try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+    catch(e) { alert('No se pudo guardar el historial. Comprueba el espacio disponible del navegador.'); return false; }
+  };
+  let inicioReloj = null, acumuladoMs = 0, rafInterval = null, bloqueado = false;
+  const $ = id => document.getElementById(id);
+  const elapsed = () => acumuladoMs + (inicioReloj ? Date.now()-inicioReloj : 0);
+  const formatTime = ms => { const s=Math.floor(ms/1000), m=Math.floor(s/60), r=s%60; return `${String(m).padStart(2,'0')}:${String(r).padStart(2,'0')}`; };
+  function paintClock(){ if($('cronometro')) $('cronometro').textContent=formatTime(elapsed()); }
+  function stopClock(){ if(inicioReloj) acumuladoMs += Date.now()-inicioReloj; inicioReloj=null; clearInterval(rafInterval); rafInterval=null; paintClock(); }
+  function startClock(){ if(!inicioReloj){ inicioReloj=Date.now(); rafInterval=setInterval(paintClock,250); } }
+  function resetClock(){ stopClock(); acumuladoMs=0; paintClock(); const icon=$('icon-play-pause'); if(icon) icon.setAttribute('data-lucide','play'); if(window.lucide) lucide.createIcons(); }
+  window.toggleTimer = function(){ if(inicioReloj){stopClock();} else {startClock();} const icon=$('icon-play-pause'); if(icon) icon.setAttribute('data-lucide',inicioReloj?'pause':'play'); if(window.lucide) lucide.createIcons(); };
+  window.resetTimer = resetClock;
+  window.actualizarReloj = paintClock;
+
+  // Ordenación de tejuelos configurable: sección definida por el ejercicio,
+  // después autor y título. No se presupone que este orden sea universal.
+  function compararTejuelo(a,b){
+    const ia=ORDEN_SECCIONES.indexOf(a.seccion), ib=ORDEN_SECCIONES.indexOf(b.seccion);
+    const sa=ia<0?999:ia, sb=ib<0?999:ib;
+    if(sa!==sb) return sa-sb;
+    const au=normalizar(a.autor).localeCompare(normalizar(b.autor),'es');
+    if(au) return au;
+    return normalizar(a.titulo).localeCompare(normalizar(b.titulo),'es');
+  }
+  function itemId(item){ return `${item.seccion}|${item.autor}|${item.titulo}|${item.texto}`; }
+  function resetMarks(container, cls){ container.querySelectorAll('.'+cls).forEach(e=>e.classList.remove(cls)); }
+  function makeList(container, items, type){
+    container.replaceChildren();
+    items.forEach((item,idx)=>{
+      const card=document.createElement('div');
+      card.className=type==='tej' ? 'item-tejuelo bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center justify-between shadow-sm' : 'item-cdu bg-slate-50 border border-slate-300 p-3 rounded-lg flex items-center justify-between shadow-sm';
+      card.dataset.key=type==='tej'?itemId(item):item.cdu;
+      const left=document.createElement('div'); left.className='flex items-center space-x-3 min-w-0';
+      const number=document.createElement('span'); number.className='text-xs font-bold text-slate-400'; number.textContent=`#${idx+1}`;
+      const value=document.createElement('span'); value.className='font-mono font-bold text-slate-800 break-all'; value.textContent=type==='tej'?item.texto:item.cdu;
+      left.append(number,value);
+      const actions=document.createElement('div'); actions.className='flex space-x-1 shrink-0';
+      [-1,1].forEach(dir=>{ const b=document.createElement('button'); b.type='button'; b.className='p-1 hover:bg-slate-200 rounded'; b.title=dir<0?'Subir':'Bajar'; b.setAttribute('aria-label',`${b.title} elemento ${idx+1}`); b.textContent=dir<0?'↑':'↓'; b.addEventListener('click',()=>window.moverCard(b,dir)); actions.appendChild(b); });
+      card.append(left,actions); container.appendChild(card);
+    });
+  }
+  window.renderTejuelos = function(items){ makeList($('lista-tejuelos'),items,'tej'); };
+  window.renderCDU = function(items){ makeList($('lista-cdu'),items,'cdu'); };
+  window.moverCard = function(btn,direccion){ const card=btn.closest('.item-tejuelo,.item-cdu'); if(!card)return; const p=card.parentElement; if(direccion<0 && card.previousElementSibling)p.insertBefore(card,card.previousElementSibling); if(direccion>0 && card.nextElementSibling)p.insertBefore(card.nextElementSibling,card); renumerar(p); };
+  function renumerar(p){ [...p.children].forEach((c,i)=>{const n=c.querySelector('.text-xs.font-bold'); if(n)n.textContent=`#${i+1}`;}); }
+
+  // MARC: autoevaluación individual; etiquetas 336, 337 y 338 separadas.
+  window.renderMARC = function(){
+    const c=$('grid-marc'); c.replaceChildren();
+    mezclar(BANCO_MARC21).forEach(item=>{
+      const card=document.createElement('button'); card.type='button'; card.className='perspective-1000 h-36 cursor-pointer text-left'; card.setAttribute('aria-pressed','false');
+      const inner=document.createElement('div'); inner.className='inner-card relative w-full h-full transform-style-3d transition-transform duration-500 shadow-md rounded-xl';
+      const front=document.createElement('div'); front.className='absolute inset-0 bg-slate-900 text-white flex flex-col items-center justify-center rounded-xl backface-hidden p-4';
+      const tag=document.createElement('span'); tag.className='text-xs text-amber-400 font-bold mb-1'; tag.textContent='CAMPO MARC21';
+      const code=document.createElement('span'); code.className='text-2xl font-black font-mono'; code.textContent=item.campo; front.append(tag,code);
+      const back=document.createElement('div'); back.className='absolute inset-0 bg-amber-400 text-slate-950 flex items-center justify-center rounded-xl backface-hidden rotate-y-180 p-4 text-center font-bold text-sm'; back.textContent=item.desc;
+      inner.append(front,back); card.append(inner);
+      card.addEventListener('click',()=>{const flipped=inner.classList.toggle('rotate-y-180');card.setAttribute('aria-pressed',String(flipped));});
+      c.appendChild(card);
+    });
+  };
+
+  function saveAttempt(module, correct, total, maxScore){
+    const records=safeRead(STORAGE_KEY);
+    records.unshift({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),timestamp:new Date().toISOString(),fecha:new Date().toLocaleString('es-ES'),tiempo:formatTime(elapsed()),modulo:module,aciertos:correct,total,nota:Number((correct/total*maxScore).toFixed(2)),maxNota:maxScore});
+    safeWrite(STORAGE_KEY,records.slice(0,300)); renderHistory();
+  }
+  window.guardarIntento = function(modulo, aciertos, nota){ const m=String(aciertos).split('/').map(Number); saveAttempt(modulo,m[0]||0,m[1]||1,Number(nota)||0); };
+  function feedback(module,correct,total,maxScore,details){
+    const score=(correct/total*maxScore).toFixed(2), f=$(`feedback-${module}`);
+    f.className='v2-panel'; f.replaceChildren();
+    const h=document.createElement('p'); h.className='font-bold text-lg'; h.textContent=`Resultado: ${correct} de ${total} posiciones correctas`;
+    const p=document.createElement('p'); p.className='mt-1'; p.textContent=`Puntuación: ${score} / ${maxScore.toFixed(2)} puntos. Tiempo: ${formatTime(elapsed())}.`;
+    const d=document.createElement('p'); d.className='text-sm text-slate-600 mt-2'; d.textContent=details; f.append(h,p,d); f.classList.remove('hidden');
+  }
+  window.comprobarTejuelos = function(){
+    const c=$('lista-tejuelos'), cards=[...c.children], actual=cards.map(x=>x.dataset.key);
+    const items=cards.map(card=>tejuelosActuales.find(x=>itemId(x)===card.dataset.key)).filter(Boolean);
+    const correcto=[...tejuelosActuales].sort(compararTejuelo), keys=correcto.map(itemId);
+    let hits=0; cards.forEach((card,i)=>{const ok=actual[i]===keys[i]; hits+=ok?1:0; card.classList.toggle('item-correct',ok);card.classList.toggle('item-wrong',!ok);});
+    feedback('tejuelos',hits,cards.length,2,'Criterio aplicado: orden de secciones configurado en el simulador; dentro de cada sección, autor y título. Comprueba las normas específicas de la biblioteca convocante.');
+    const ol=$('lista-solucion-tejuelos'); ol.replaceChildren(); correcto.forEach((x,i)=>{const li=document.createElement('li');li.textContent=`${i+1}. ${x.texto}`;ol.appendChild(li);}); $('solucion-tejuelos').classList.remove('hidden'); saveAttempt('Tejuelos',hits,cards.length,2);
+  };
+  window.comprobarCDU = function(){
+    const c=$('lista-cdu'), cards=[...c.children], actual=cards.map(x=>x.dataset.key);
+    const values=cards.map(x=>x.dataset.key); const sorted=[...values].sort((a,b)=>compararCDU({cdu:a},{cdu:b}));
+    let hits=0; cards.forEach((card,i)=>{const ok=actual[i]===sorted[i];hits+=ok?1:0;card.classList.toggle('item-correct',ok);card.classList.toggle('item-wrong',!ok);});
+    feedback('cdu',hits,cards.length,2,'Aviso: el comparador CDU heredado es una heurística didáctica, no un parser validado de la CDU. Las ordenaciones con auxiliares y signos complejos deben contrastarse con la edición y las reglas empleadas en la convocatoria.');
+    const ol=$('lista-solucion-cdu');ol.replaceChildren();sorted.forEach((x,i)=>{const li=document.createElement('li');li.textContent=`${i+1}. ${x}`;ol.appendChild(li);});$('solucion-cdu').classList.remove('hidden');saveAttempt('CDU',hits,cards.length,2);
+  };
+
+  function renderHistory(){
+    const c=$('tabla-historial'); if(!c)return; const rows=safeRead(STORAGE_KEY); const legacy=safeRead(LEGACY_KEY);
+    const all=rows.length?rows:legacy.map(x=>({...x,timestamp:null,maxNota:2}));
+    if(!all.length){c.textContent='Aún no hay intentos registrados.';return;}
+    const stats=document.createElement('div'); stats.className='grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4';
+    const avg=all.reduce((s,x)=>s+(Number(x.nota)||0),0)/all.length;
+    [[all.length,'Intentos registrados'],[avg.toFixed(2),'Media de puntos'],[Math.max(...all.map(x=>Number(x.nota)||0)).toFixed(2),'Mejor puntuación']].forEach(([v,l])=>{const d=document.createElement('div');d.className='stat-card';const strong=document.createElement('div');strong.className='text-2xl font-bold';strong.textContent=v;const small=document.createElement('div');small.className='text-xs text-slate-500';small.textContent=l;d.append(strong,small);stats.appendChild(d);});
+    const wrap=document.createElement('div');wrap.className='overflow-x-auto';const table=document.createElement('table');table.className='w-full text-left border-collapse text-sm';
+    const thead=document.createElement('thead'),trh=document.createElement('tr');['Fecha','Módulo','Tiempo','Aciertos','Nota'].forEach(t=>{const th=document.createElement('th');th.className='py-2 pr-4 border-b';th.textContent=t;trh.appendChild(th);});thead.appendChild(trh);table.appendChild(thead);
+    const tbody=document.createElement('tbody');all.forEach(row=>{const tr=document.createElement('tr');[row.fecha||new Date(row.timestamp).toLocaleString('es-ES'),row.modulo,row.tiempo,row.total?`${row.aciertos}/${row.total}`:row.aciertos,`${row.nota} pts`].forEach(v=>{const td=document.createElement('td');td.className='py-2 pr-4 border-b';td.textContent=v??'';tr.appendChild(td);});tbody.appendChild(tr);});table.appendChild(tbody);wrap.appendChild(table);c.replaceChildren(stats,wrap);
+  }
+  window.cargarHistorial=renderHistory;
+  window.exportarHistorial=function(){const data=safeRead(STORAGE_KEY);const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='historial-auxiliar-biblioteca.json';a.click();URL.revokeObjectURL(url);};
+  window.borrarHistorial=function(){if(confirm('¿Quieres borrar el historial guardado en este navegador?')){localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(LEGACY_KEY);renderHistory();}};
+
+  // Generación con Fisher–Yates y evita repetir la misma combinación consecutiva.
+  let ultimaHuella='';
+  window.generarNuevoExamen=function(){
+    resetClock(); bloqueado=false;
+    let t=mezclar(BANCO_TEJUELOS).slice(0,20), d=mezclar(BANCO_CDU).slice(0,10);
+    let fingerprint=t.map(itemId).sort().join('~')+'||'+d.map(x=>x.cdu).sort().join('~');
+    if(fingerprint===ultimaHuella){t=mezclar(BANCO_TEJUELOS).slice(0,20);d=mezclar(BANCO_CDU).slice(0,10);fingerprint=t.map(itemId).sort().join('~')+'||'+d.map(x=>x.cdu).sort().join('~');}
+    ultimaHuella=fingerprint; tejuelosActuales=t; cduActual=d;
+    renderTejuelos(t);renderCDU(d);renderMARC();
+    ['feedback-tejuelos','solucion-tejuelos','feedback-cdu','solucion-cdu'].forEach(id=>$(id).classList.add('hidden'));
+  };
+  // Historial: botones de exportación y borrado, sin modificar la estructura principal.
+  document.addEventListener('DOMContentLoaded',()=>{
+    const h=$('sec-historial'); if(h && !$('acciones-historial')){const bar=document.createElement('div');bar.id='acciones-historial';bar.className='flex flex-wrap gap-2 mb-4';bar.innerHTML='<button type="button" class="bg-slate-800 text-white px-3 py-2 rounded-lg text-sm" id="export-history">Exportar JSON</button><button type="button" class="bg-red-100 text-red-800 px-3 py-2 rounded-lg text-sm" id="clear-history">Borrar historial</button>';h.querySelector('.bg-white').insertBefore(bar,$('tabla-historial'));$('export-history').addEventListener('click',exportarHistorial);$('clear-history').addEventListener('click',borrarHistorial);}
+    const cduInfo=document.createElement('p');cduInfo.className='text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4';cduInfo.textContent='Nota metodológica: la CDU contiene reglas de ordenación que dependen de la notación y de la edición aplicada. Este módulo es de práctica orientativa y su comparador no debe considerarse una implementación normativa completa.';$('sec-cdu')?.querySelector('.bg-white')?.appendChild(cduInfo);
+    renderHistory();
+  });
+  // Migración de datos: conserva el historial antiguo y lo muestra si aún no hay registros V2.
+})();
+</script>
+
+</body>
+</html>
