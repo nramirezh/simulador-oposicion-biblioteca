@@ -158,7 +158,108 @@
   <script>
     // BANCOS DE DATOS EXTENDIDOS
     const BANCO_TEJUELOS = [
-      { seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
+      // TEJUELOS
+
+      // INFANTIL - NARRATIVA
+      { seccion: "I-N", autor: "DAH", titulo: "mat", texto: "I-N / DAH / mat" },
+      { seccion: "I-N", autor: "DAH", titulo: "cha", texto: "I-N / DAH / cha" },
+      { seccion: "I-N", autor: "ROW", titulo: "har", texto: "I-N / ROW / har" },
+      { seccion: "I-N", autor: "SAI", titulo: "pri", texto: "I-N / SAI / pri" },
+      { seccion: "I-N", autor: "LIN", titulo: "his", texto: "I-N / LIN / his" },
+      { seccion: "I-N", autor: "CAR", titulo: "ali", texto: "I-N / CAR / ali" },
+    
+      // INFANTIL - CONOCIMIENTO
+      { seccion: "I-C", autor: "WIL", titulo: "enc", texto: "I-C / WIL / enc" },
+      { seccion: "I-C", autor: "BUR", titulo: "ani", texto: "I-C / BUR / ani" },
+      { seccion: "I-C", autor: "GOM", titulo: "pla", texto: "I-C / GOM / pla" },
+      { seccion: "I-C", autor: "GAR", titulo: "cue", texto: "I-C / GAR / cue" },
+    
+      // INFANTIL - POESÍA
+      { seccion: "I-P", autor: "NER", titulo: "lib", texto: "I-P / NER / lib" },
+      { seccion: "I-P", autor: "GLA", titulo: "ver", texto: "I-P / GLA / ver" },
+      { seccion: "I-P", autor: "LOB", titulo: "ver", texto: "I-P / LOB / ver" },
+    
+      // INFANTIL - CÓMIC
+      { seccion: "I-CM", autor: "GOS", titulo: "tom", texto: "I-CM / GOS / tom" },
+      { seccion: "I-CM", autor: "PIL", titulo: "dia", texto: "I-CM / PIL / dia" },
+      { seccion: "I-CM", autor: "KIN", titulo: "don", texto: "I-CM / KIN / don" },
+    
+      // NARRATIVA
+      { seccion: "N", autor: "CER", titulo: "qui", texto: "N / CER / qui" },
+      { seccion: "N", autor: "GAR", titulo: "cie", texto: "N / GAR / cie" },
+      { seccion: "N", autor: "MAR", titulo: "amo", texto: "N / MAR / amo" },
+      { seccion: "N", autor: "DEL", titulo: "som", texto: "N / DEL / som" },
+      { seccion: "N", autor: "ALL", titulo: "cas", texto: "N / ALL / cas" },
+      { seccion: "N", autor: "RUL", titulo: "ped", texto: "N / RUL / ped" },
+      { seccion: "N", autor: "ORW", titulo: "198", texto: "N / ORW / 198" },
+      { seccion: "N", autor: "HUX", titulo: "mun", texto: "N / HUX / mun" },
+      { seccion: "N", autor: "AUS", titulo: "org", texto: "N / AUS / org" },
+      { seccion: "N", autor: "DOS", titulo: "cri", texto: "N / DOS / cri" },
+    
+      // POESÍA
+      { seccion: "P", autor: "LOR", titulo: "rom", texto: "P / LOR / rom" },
+      { seccion: "P", autor: "NER", titulo: "vei", texto: "P / NER / vei" },
+      { seccion: "P", autor: "BEN", titulo: "son", texto: "P / BEN / son" },
+      { seccion: "P", autor: "ALE", titulo: "som", texto: "P / ALE / som" },
+    
+      // TEATRO
+      { seccion: "T", autor: "LOR", titulo: "bod", texto: "T / LOR / bod" },
+      { seccion: "T", autor: "CAL", titulo: "vid", texto: "T / CAL / vid" },
+      { seccion: "T", autor: "SHA", titulo: "ham", texto: "T / SHA / ham" },
+      { seccion: "T", autor: "BUÑ", titulo: "his", texto: "T / BUÑ / his" },
+    
+      // BIOGRAFÍAS
+      { seccion: "B", autor: "GIB", titulo: "ste", texto: "B / GIB / ste" },
+      { seccion: "B", autor: "ISA", titulo: "fri", texto: "B / ISA / fri" },
+      { seccion: "B", autor: "MAN", titulo: "leo", texto: "B / MAN / leo" },
+      { seccion: "B", autor: "WAL", titulo: "ein", texto: "B / WAL / ein" },
+    
+      // CÓMIC
+      { seccion: "CM", autor: "HER", titulo: "mor", texto: "CM / HER / mor" },
+      { seccion: "CM", autor: "GRO", titulo: "con", texto: "CM / GRO / con" },
+      { seccion: "CM", autor: "MIL", titulo: "per", texto: "CM / MIL / per" },
+      { seccion: "CM", autor: "MOE", titulo: "wat", texto: "CM / MOE / wat" },
+    
+      // HISTORIA
+      { seccion: "H", autor: "HAR", titulo: "bre", texto: "H / HAR / bre" },
+      { seccion: "H", autor: "TUC", titulo: "arm", texto: "H / TUC / arm" },
+      { seccion: "H", autor: "BEV", titulo: "his", texto: "H / BEV / his" },
+    
+      // GEOGRAFÍA Y VIAJES
+      { seccion: "G", autor: "KAP", titulo: "via", texto: "G / KAP / via" },
+      { seccion: "G", autor: "HUM", titulo: "not", texto: "G / HUM / not" },
+      { seccion: "G", autor: "DAR", titulo: "via", texto: "G / DAR / via" },
+    
+      // FILOSOFÍA
+      { seccion: "F", autor: "PLA", titulo: "rep", texto: "F / PLA / rep" },
+      { seccion: "F", autor: "NIET", titulo: "asi", texto: "F / NIE / asi" },
+      { seccion: "F", autor: "ORT", titulo: "reb", texto: "F / ORT / reb" },
+    
+      // ENSAYO
+      { seccion: "E", autor: "SAG", titulo: "hom", texto: "E / SAG / hom" },
+      { seccion: "E", autor: "HAR", titulo: "mun", texto: "E / HAR / mun" },
+      { seccion: "E", autor: "CHA", titulo: "ori", texto: "E / CHA / ori" },
+    
+      // CIENCIAS
+      { seccion: "C", autor: "HAW", titulo: "bre", texto: "C / HAW / bre" },
+      { seccion: "C", autor: "SAG", titulo: "cos", texto: "C / SAG / cos" },
+      { seccion: "C", autor: "DAR", titulo: "ori", texto: "C / DAR / ori" },
+    
+      // ARTE
+      { seccion: "A", autor: "GOM", titulo: "his", texto: "A / GOM / his" },
+      { seccion: "A", autor: "GOM", titulo: "art", texto: "A / GOM / art" },
+      { seccion: "A", autor: "BER", titulo: "fot", texto: "A / BER / fot" },
+    
+      // CANARIAS
+      { seccion: "CAN", autor: "VIE", titulo: "his", texto: "CAN / VIE / his" },
+      { seccion: "CAN", autor: "MOR", titulo: "his", texto: "CAN / MOR / his" },
+      { seccion: "CAN", autor: "CRO", titulo: "his", texto: "CAN / CRO / his" },
+    
+      // REFERENCIA Y CONSULTA
+      { seccion: "R", autor: "RAE", titulo: "dic", texto: "R / RAE / dic" },
+      { seccion: "R", autor: "ESP", titulo: "enc", texto: "R / ESP / enc" }
+      
+      /*{ seccion: "I-N", autor: "CHA", titulo: "eno", texto: "I-N / CHA / eno" },
       { seccion: "I-N", autor: "GRE", titulo: "inv", texto: "I-N / GRE / inv" },
       { seccion: "I-N", autor: "OLL", titulo: "sab", texto: "I-N / OLL / sab" },
       { seccion: "I-N", autor: "PER", titulo: "cue", texto: "I-N / PER / cue" },
@@ -183,7 +284,7 @@
       { seccion: "P", autor: "ACO", titulo: "ant", texto: "P / ACO / ant" },
       { seccion: "P", autor: "ACO", titulo: "del", texto: "P / ACO / del" },
       { seccion: "P", autor: "ANT", titulo: "", texto: "P / ANT" },
-      { seccion: "P", autor: "ANT", titulo: "ant", texto: "P / ANT / ant" }
+      { seccion: "P", autor: "ANT", titulo: "ant", texto: "P / ANT / ant" }*/
     ];
 
     const BANCO_CDU = [
@@ -201,7 +302,42 @@
       { cdu: "61:001.891\"1991\"", valor: 12 },
       { cdu: "61:001.895", valor: 13 },
       { cdu: "61:1\"16/17\"", valor: 14 },
-      { cdu: "615:004(063)", valor: 15 }
+      { cdu: "615:004(063)", valor: 15 },
+      { cdu: "02", valor: 1 },
+      { cdu: "027", valor: 2 },
+      { cdu: "025.3", valor: 3 },
+      { cdu: "025.4", valor: 4 },
+      { cdu: "087.5", valor: 5 },
+      { cdu: "1", valor: 6 },
+      { cdu: "159.9", valor: 7 },
+      { cdu: "316", valor: 8 },
+      { cdu: "32", valor: 9 },
+      { cdu: "33", valor: 10 },
+      { cdu: "37", valor: 11 },
+      { cdu: "398", valor: 12 },
+      { cdu: "502", valor: 13 },
+      { cdu: "51", valor: 14 },
+      { cdu: "53", valor: 15 },
+      { cdu: "54", valor: 16 },
+      { cdu: "57", valor: 17 },
+      { cdu: "61", valor: 18 },
+      { cdu: "62", valor: 19 },
+      { cdu: "7", valor: 20 },
+      { cdu: "72", valor: 21 },
+      { cdu: "75", valor: 22 },
+      { cdu: "77", valor: 23 },
+      { cdu: "78", valor: 24 },
+      { cdu: "82-1", valor: 25 },
+      { cdu: "82-2", valor: 26 },
+      { cdu: "82-3", valor: 27 },
+      { cdu: "821.134.2", valor: 28 },
+      { cdu: "929", valor: 29 },
+      { cdu: "94", valor: 30 },
+      { cdu: "94(460)", valor: 31 },
+      { cdu: "908(460.41)", valor: 32 },
+      { cdu: "910", valor: 33 },
+      { cdu: "913", valor: 34 },
+      { cdu: "930.85", valor: 35 }
     ];
 
     const BANCO_MARC21 = [
